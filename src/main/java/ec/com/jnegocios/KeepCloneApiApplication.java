@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class KeepCloneApiApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(KeepCloneApiApplication.class, args);
+
 	}
 
 }
