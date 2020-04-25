@@ -4,13 +4,13 @@ import java.util.Collection;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import ec.com.jnegocios.entity.User;
+import ec.com.jnegocios.entity.UserAccount;
 
-public interface UserRepository extends JpaRepository<User, Integer>{
+public interface UserRepository extends JpaRepository<UserAccount, Integer>{
 	
-	User findByEmail(String email);
+	UserAccount findByEmail(String email);
 	
-	Collection<User> findByEnabledTrue();
+	Collection<UserAccount> findByEnabledTrue();
 	
-	Collection<User> findByEnabledFalse();
+	Collection<UserAccount> findByEnabledFalse();
 }

@@ -32,13 +32,13 @@ public class Role implements Serializable {
 	
 	@ManyToOne
 	@JsonIgnoreProperties({"roles", "notes", "tags"})
-	private User user;
+	private UserAccount user;
 	
 	public Role() {}
 
 	public Role(int id,
 			@Size(min = 3, max = 30, message = "El rol debe ser mayor a 3 y menor a 30 caracteres.") @NotEmpty(message = "El rol es obligatorio.") String name,
-			User user) {
+			UserAccount user) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -61,11 +61,11 @@ public class Role implements Serializable {
 		this.name = name;
 	}
 
-	public User getUser() {
+	public UserAccount getUser() {
 		return user;
 	}
 
-	public void setUser(User user) {
+	public void setUser(UserAccount user) {
 		this.user = user;
 	}
 

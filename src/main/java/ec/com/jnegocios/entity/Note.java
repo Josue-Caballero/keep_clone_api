@@ -49,7 +49,7 @@ public class Note implements Serializable {
 	@JsonProperty(access = Access.READ_ONLY)
 	@ManyToOne
 	@JsonIgnoreProperties({"notes", "roles", "tags"})
-	private User user;
+	private UserAccount user;
 	
 	@OneToMany(mappedBy = "note", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties({"note"})
@@ -61,7 +61,7 @@ public class Note implements Serializable {
 	private Collection<Tag> tags;
 	
 	
-	@Column(name = "created_at")
+	@Column(name = "created_at", updatable = false)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime createdAt;
@@ -72,7 +72,7 @@ public class Note implements Serializable {
 	private LocalDateTime updatedAt;
 
 	
-	public Note(int id, String title, String description, String color, boolean filed, User user,
+	public Note(int id, String title, String description, String color, boolean filed, UserAccount user,
 			LocalDateTime createdAt, LocalDateTime updatedAt) {
 		super();
 		this.id = id;
@@ -130,11 +130,11 @@ public class Note implements Serializable {
 		this.filed = filed;
 	}
 
-	public User getUser() {
+	public UserAccount getUser() {
 		return user;
 	}
 
-	public void setUser(User user) {
+	public void setUser(UserAccount user) {
 		this.user = user;
 	}
 

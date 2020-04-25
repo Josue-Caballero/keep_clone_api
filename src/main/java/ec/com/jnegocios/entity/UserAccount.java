@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -28,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 @Entity
 @Table(name = "users")
 @JsonInclude(Include.NON_NULL)
-public class User implements Serializable {
+public class UserAccount implements Serializable {
 
 	private static final long serialVersionUID = -612571457691264492L;
 	
@@ -65,10 +66,11 @@ public class User implements Serializable {
 	
 	private boolean darkmode;
 	
-	@Column(name = "token_exp")
-	private Long tokenExp;
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonIgnoreProperties({"user"})
+	private RegistrationToken registrationToken;
 	
-	@Column(name = "created_at")
+	@Column(name = "created_at", updatable = false)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime createdAt;
@@ -91,13 +93,13 @@ public class User implements Serializable {
 	private Collection<Tag> tags;
 	
 	
-	public User(int id,
+	public UserAccount(int id,
 			@Size(min = 3, max = 30, message = "El nombre debe ser mayor a 3 y menor a 30 caracteres.") @NotEmpty(message = "El nombre es obligatorio.") String name,
 			@Size(min = 3, max = 30, message = "El apellido debe ser mayor a 3 y menor a 30 caracteres.") @NotEmpty(message = "El apellido es obligatorio.") String lastname,
 			@Size(min = 3, max = 20, message = "El nombre de usuario debe ser mayor a 3 y menor a 20 caracteres.") @NotEmpty(message = "El nombre de usuario es obligatorio.") String username,
 			@Size(min = 10, max = 60, message = "El correo debe ser mayor a 10 y menor a 60 caracteres.") @NotEmpty(message = "El correo es obligatorio.") String email,
 			@NotEmpty(message = "La contraseña es obligatoria.") String password, String photo, String storageUrl,
-			boolean enabled, boolean darkmode, Long tokenExp, LocalDateTime createdAt, LocalDateTime updatedAt) {
+			boolean enabled, boolean darkmode, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -109,12 +111,11 @@ public class User implements Serializable {
 		this.storageUrl = storageUrl;
 		this.enabled = enabled;
 		this.darkmode = darkmode;
-		this.tokenExp = tokenExp;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}
 	
-	public User() {
+	public UserAccount() {
 		this.roles = new ArrayList<Role>();
 		this.notes = new ArrayList<Note>();
 		this.tags = new ArrayList<Tag>();
@@ -201,14 +202,6 @@ public class User implements Serializable {
 		this.darkmode = darkmode;
 	}
 
-	public Long getTokenExp() {
-		return tokenExp;
-	}
-
-	public void setTokenExp(Long tokenExp) {
-		this.tokenExp = tokenExp;
-	}
-
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}
@@ -248,9 +241,18 @@ public class User implements Serializable {
 	public void setTags(Collection<Tag> tags) {
 		this.tags = tags;
 	}
+	
+	public RegistrationToken getRegistrationToken() {
+		return registrationToken;
+	}
 
+	public void setRegistrationToken(RegistrationToken registrationToken) {
+		this.registrationToken = registrationToken;
+	}
 	
 	
+	
+
 	public void addRole (Role role)
 	{
 		this.roles.add(role);
@@ -313,7 +315,7 @@ public class User implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		User other = (User) obj;
+		UserAccount other = (UserAccount) obj;
 		if (email == null) {
 			if (other.email != null)
 				return false;
@@ -326,10 +328,10 @@ public class User implements Serializable {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", name=" + name + ", lastname=" + lastname + ", username=" + username + ", email="
-				+ email + ", password=" + password + ", photo=" + photo + ", storageUrl=" + storageUrl + ", enabled="
-				+ enabled + ", darkmode=" + darkmode + ", tokenExp=" + tokenExp + ", createdAt=" + createdAt
-				+ ", updatedAt=" + updatedAt + "]";
+		return "UserAccount [id=" + id + ", name=" + name + ", lastname=" + lastname + ", username=" + username
+				+ ", email=" + email + ", password=" + password + ", photo=" + photo + ", storageUrl=" + storageUrl
+				+ ", enabled=" + enabled + ", darkmode=" + darkmode + ", registrationToken=" + registrationToken
+				+ ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
 	}
 
 }

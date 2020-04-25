@@ -39,7 +39,7 @@ public class Image implements Serializable {
 	@JsonIgnoreProperties({"user", "images", "tags"})
 	private Note note;
 	
-	@Column(name = "created_at")
+	@Column(name = "created_at", updatable = false)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime createdAt;

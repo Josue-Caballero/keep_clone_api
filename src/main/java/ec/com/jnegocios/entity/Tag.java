@@ -39,14 +39,14 @@ public class Tag implements Serializable {
 	@JsonProperty(access = Access.READ_ONLY)
 	@ManyToOne
 	@JsonIgnoreProperties({"tags", "roles", "notes"})
-	private User user;
+	private UserAccount user;
 	
 	@ManyToMany(mappedBy = "tags", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties({"tags", "user"})
 	private Collection<Note> notes;
 	
 	
-	@Column(name = "created_at")
+	@Column(name = "created_at", updatable = false)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime createdAt;
@@ -60,7 +60,7 @@ public class Tag implements Serializable {
 		this.updatedAt = LocalDateTime.now();
 	}
 
-	public Tag(int id, String name, User user, LocalDateTime createdAt, LocalDateTime updatedAt) {
+	public Tag(int id, String name, UserAccount user, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -85,11 +85,11 @@ public class Tag implements Serializable {
 		this.name = name;
 	}
 
-	public User getUser() {
+	public UserAccount getUser() {
 		return user;
 	}
 
-	public void setUser(User user) {
+	public void setUser(UserAccount user) {
 		this.user = user;
 	}
 
