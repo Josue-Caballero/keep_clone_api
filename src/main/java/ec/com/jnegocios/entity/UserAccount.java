@@ -66,6 +66,8 @@ public class UserAccount implements Serializable {
 	
 	private boolean darkmode;
 	
+	private Long token_exp;
+	
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties({"user"})
 	private RegistrationToken registrationToken;
@@ -99,7 +101,7 @@ public class UserAccount implements Serializable {
 			@Size(min = 3, max = 20, message = "El nombre de usuario debe ser mayor a 3 y menor a 20 caracteres.") @NotEmpty(message = "El nombre de usuario es obligatorio.") String username,
 			@Size(min = 10, max = 60, message = "El correo debe ser mayor a 10 y menor a 60 caracteres.") @NotEmpty(message = "El correo es obligatorio.") String email,
 			@NotEmpty(message = "La contraseña es obligatoria.") String password, String photo, String storageUrl,
-			boolean enabled, boolean darkmode, LocalDateTime createdAt, LocalDateTime updatedAt) {
+			boolean enabled, boolean darkmode, LocalDateTime createdAt, LocalDateTime updatedAt, Long token_exp) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -113,6 +115,7 @@ public class UserAccount implements Serializable {
 		this.darkmode = darkmode;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
+		this.token_exp = token_exp;
 	}
 	
 	public UserAccount() {
@@ -192,6 +195,14 @@ public class UserAccount implements Serializable {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public Long getToken_exp() {
+		return token_exp;
+	}
+
+	public void setToken_exp(Long token_exp) {
+		this.token_exp = token_exp;
 	}
 
 	public boolean isDarkmode() {
@@ -330,8 +341,9 @@ public class UserAccount implements Serializable {
 	public String toString() {
 		return "UserAccount [id=" + id + ", name=" + name + ", lastname=" + lastname + ", username=" + username
 				+ ", email=" + email + ", password=" + password + ", photo=" + photo + ", storageUrl=" + storageUrl
-				+ ", enabled=" + enabled + ", darkmode=" + darkmode + ", registrationToken=" + registrationToken
-				+ ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+				+ ", enabled=" + enabled + ", darkmode=" + darkmode + ", token_exp=" + token_exp
+				+ ", registrationToken=" + registrationToken + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
+				+ "]";
 	}
 
 }

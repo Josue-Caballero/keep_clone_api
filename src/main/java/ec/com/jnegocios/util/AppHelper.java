@@ -1,4 +1,4 @@
-package ec.com.jnegocios.exception.util;
+package ec.com.jnegocios.util;
 
 public class AppHelper {
 	

@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import ec.com.jnegocios.exception.util.AppHelper;
+import ec.com.jnegocios.util.AppHelper;
 
 @Configuration
 public class RestConfig implements WebMvcConfigurer{

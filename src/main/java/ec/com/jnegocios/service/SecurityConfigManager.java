@@ -19,9 +19,9 @@ public class SecurityConfigManager implements SecurityConfigService {
 		throws Exception {
 
 		http.cors().and() 	//Add Cors to all endpoints
-		.csrf().disable()
-		.sessionManagement()
-			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+			.csrf().disable()
+			.sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		
 		return this;
 
