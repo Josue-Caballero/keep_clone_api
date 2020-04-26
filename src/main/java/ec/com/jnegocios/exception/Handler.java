@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import ec.com.jnegocios.exception.auth.AccountServiceException;
+
 @RestControllerAdvice
 public class Handler {
 	
@@ -40,7 +42,8 @@ public class Handler {
 	
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({
-    		BadRequestException.class,
+			BadRequestException.class,
+			AccountServiceException.class,
             org.springframework.dao.DuplicateKeyException.class,
             org.springframework.web.HttpRequestMethodNotSupportedException.class,
             org.springframework.web.bind.MissingRequestHeaderException.class,

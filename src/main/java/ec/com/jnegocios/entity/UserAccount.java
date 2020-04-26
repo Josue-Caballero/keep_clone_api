@@ -18,6 +18,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -119,10 +120,17 @@ public class UserAccount implements Serializable {
 	}
 	
 	public UserAccount() {
+	
 		this.roles = new ArrayList<Role>();
 		this.notes = new ArrayList<Note>();
 		this.tags = new ArrayList<Tag>();
-		this.updatedAt = LocalDateTime.now();
+		this.setCreatedAt( LocalDateTime.now() );
+		this.setEnabled( false );
+		this.setDarkmode( false );
+		this.setToken_exp( (long) 0 );
+		this.setPhoto("");
+		this.setStorageUrl("");
+	
 	}
 
 	public int getId() {
@@ -170,7 +178,10 @@ public class UserAccount implements Serializable {
 	}
 
 	public void setPassword(String password) {
-		this.password = password;
+	
+		this.password = PasswordEncoderFactories
+			.createDelegatingPasswordEncoder().encode(password);
+	
 	}
 
 	public String getPhoto() {

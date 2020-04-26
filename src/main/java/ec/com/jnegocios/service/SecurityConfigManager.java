@@ -31,6 +31,7 @@ public class SecurityConfigManager implements SecurityConfigService {
 
 		http.authorizeRequests()
 			.antMatchers(HttpMethod.GET, "/").permitAll()
+			.antMatchers("/auth/**").permitAll()
 			.anyRequest().authenticated();
 		
 		return this;
