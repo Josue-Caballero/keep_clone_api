@@ -1,5 +1,5 @@
 
-package ec.com.jnegocios.exception.auth;
+package ec.com.jnegocios.exception.global.auth;
 
 /**
  * Execption for account service issues.
@@ -8,6 +8,8 @@ package ec.com.jnegocios.exception.auth;
  * Create account validation
  */
 public class AccountServiceException extends RuntimeException {
+
+	private static final long serialVersionUID = -8726164367975735236L;
 
 	private static final String DEFAULT_MSG = "Account process invalid";
 

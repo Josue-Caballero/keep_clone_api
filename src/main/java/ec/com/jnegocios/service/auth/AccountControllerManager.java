@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ec.com.jnegocios.entity.UserAccount;
-import ec.com.jnegocios.exception.auth.AccountServiceException;
+import ec.com.jnegocios.exception.global.auth.AccountServiceException;
 import ec.com.jnegocios.repository.UserRepository;
 
 @Service

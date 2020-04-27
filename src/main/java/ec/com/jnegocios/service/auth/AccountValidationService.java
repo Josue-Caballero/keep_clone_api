@@ -2,7 +2,7 @@
 package ec.com.jnegocios.service.auth;
 
 import ec.com.jnegocios.entity.UserAccount;
-import ec.com.jnegocios.exception.auth.AccountServiceException;
+import ec.com.jnegocios.exception.global.auth.AccountServiceException;
 
 public interface AccountValidationService {
 

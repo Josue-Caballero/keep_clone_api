@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import ec.com.jnegocios.entity.RegistrationToken;
 import ec.com.jnegocios.entity.UserAccount;
-import ec.com.jnegocios.exception.auth.AccountServiceException;
+import ec.com.jnegocios.exception.global.auth.AccountServiceException;
 import ec.com.jnegocios.repository.RegistrationTokenRepository;
 import ec.com.jnegocios.repository.UserRepository;
 import ec.com.jnegocios.service.mail.MailSenderService;

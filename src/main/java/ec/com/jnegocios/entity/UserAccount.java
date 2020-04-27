@@ -347,7 +347,7 @@ public class UserAccount implements Serializable {
 			return false;
 		return true;
 	}
-
+	
 	@Override
 	public String toString() {
 		return "UserAccount [id=" + id + ", name=" + name + ", lastname=" + lastname + ", username=" + username
@@ -356,5 +356,5 @@ public class UserAccount implements Serializable {
 				+ ", registrationToken=" + registrationToken + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
 				+ "]";
 	}
-
+	
 }
