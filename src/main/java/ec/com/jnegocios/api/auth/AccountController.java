@@ -1,6 +1,8 @@
 
 package ec.com.jnegocios.api.auth;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +24,7 @@ public class AccountController {
 	AccountControllerService accountControllerService;
 
 	@PostMapping("/account")
-	public UserAccount createAccount( @RequestBody UserAccount userAccount ) {
+	public UserAccount createAccount(@Valid @RequestBody UserAccount userAccount ) {
 
 		accountControllerService
 			.validateAccountData(userAccount)

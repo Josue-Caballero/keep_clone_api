@@ -26,7 +26,7 @@ public class Role implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
-	@Size(min = 3, max = 30, message = "El rol debe ser mayor a 3 y menor a 30 caracteres.")
+	@Size(min = 3, max = 255, message = "El rol debe ser mayor a 3 y menor a 255 caracteres.")
 	@NotEmpty(message = "El rol es obligatorio.")
 	private String name;
 	
@@ -37,7 +37,7 @@ public class Role implements Serializable {
 	public Role() {}
 
 	public Role(int id,
-			@Size(min = 3, max = 30, message = "El rol debe ser mayor a 3 y menor a 30 caracteres.") @NotEmpty(message = "El rol es obligatorio.") String name,
+			@Size(min = 3, max = 255, message = "El rol debe ser mayor a 3 y menor a 255 caracteres.") @NotEmpty(message = "El rol es obligatorio.") String name,
 			UserAccount user) {
 		super();
 		this.id = id;

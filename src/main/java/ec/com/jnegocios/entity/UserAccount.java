@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
@@ -38,19 +39,20 @@ public class UserAccount implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
-	@Size(min = 3, max = 30, message = "El nombre debe ser mayor a 3 y menor a 30 caracteres.")
+	@Size(min = 3, max = 155, message = "El nombre debe ser mayor a 3 y menor a 155 caracteres.")
 	@NotEmpty(message = "El nombre es obligatorio.")
 	private String name;
 	
-	@Size(min = 3, max = 30, message = "El apellido debe ser mayor a 3 y menor a 30 caracteres.")
+	@Size(min = 3, max = 155, message = "El apellido debe ser mayor a 3 y menor a 155 caracteres.")
 	@NotEmpty(message = "El apellido es obligatorio.")
 	private String lastname;
 	
-	@Size(min = 3, max = 20, message = "El nombre de usuario debe ser mayor a 3 y menor a 20 caracteres.")
+	@Size(min = 3, max = 16, message = "El nombre de usuario debe ser mayor a 3 y menor a 16 caracteres.")
 	@NotEmpty(message = "El nombre de usuario es obligatorio.")
 	private String username;
 	
-	@Size(min = 10, max = 60, message = "El correo debe ser mayor a 10 y menor a 60 caracteres.")
+	@Email(message = "El correo no es válido.")
+	@Size(min = 5, max = 255, message = "El correo debe ser mayor a 5 y menor a 255 caracteres.")
 	@NotEmpty(message = "El correo es obligatorio.")
 	private String email;
 	
@@ -94,15 +96,15 @@ public class UserAccount implements Serializable {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties({"user", "notes"})
 	private Collection<Tag> tags;
-	
-	
+		
 	public UserAccount(int id,
-			@Size(min = 3, max = 30, message = "El nombre debe ser mayor a 3 y menor a 30 caracteres.") @NotEmpty(message = "El nombre es obligatorio.") String name,
-			@Size(min = 3, max = 30, message = "El apellido debe ser mayor a 3 y menor a 30 caracteres.") @NotEmpty(message = "El apellido es obligatorio.") String lastname,
-			@Size(min = 3, max = 20, message = "El nombre de usuario debe ser mayor a 3 y menor a 20 caracteres.") @NotEmpty(message = "El nombre de usuario es obligatorio.") String username,
-			@Size(min = 10, max = 60, message = "El correo debe ser mayor a 10 y menor a 60 caracteres.") @NotEmpty(message = "El correo es obligatorio.") String email,
+			@Size(min = 3, max = 155, message = "El nombre debe ser mayor a 3 y menor a 155 caracteres.") @NotEmpty(message = "El nombre es obligatorio.") String name,
+			@Size(min = 3, max = 155, message = "El apellido debe ser mayor a 3 y menor a 155 caracteres.") @NotEmpty(message = "El apellido es obligatorio.") String lastname,
+			@Size(min = 3, max = 16, message = "El nombre de usuario debe ser mayor a 3 y menor a 16 caracteres.") @NotEmpty(message = "El nombre de usuario es obligatorio.") String username,
+			@Email(message = "El correo no es válido.") @Size(min = 5, max = 255, message = "El correo debe ser mayor a 5 y menor a 255 caracteres.") @NotEmpty(message = "El correo es obligatorio.") String email,
 			@NotEmpty(message = "La contraseña es obligatoria.") String password, String photo, String storageUrl,
-			boolean enabled, boolean darkmode, LocalDateTime createdAt, LocalDateTime updatedAt, Long token_exp) {
+			boolean enabled, boolean darkmode, Long token_exp, RegistrationToken registrationToken,
+			LocalDateTime createdAt, LocalDateTime updatedAt) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -114,11 +116,12 @@ public class UserAccount implements Serializable {
 		this.storageUrl = storageUrl;
 		this.enabled = enabled;
 		this.darkmode = darkmode;
+		this.token_exp = token_exp;
+		this.registrationToken = registrationToken;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
-		this.token_exp = token_exp;
 	}
-	
+
 	public UserAccount() {
 	
 		this.roles = new ArrayList<Role>();
