@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -30,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
 @Table(name = "users")
-@JsonInclude(Include.NON_NULL)
+@JsonInclude(Include.NON_EMPTY)
 public class UserAccount implements Serializable {
 
 	private static final long serialVersionUID = -612571457691264492L;
@@ -87,14 +88,17 @@ public class UserAccount implements Serializable {
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties({"user"})
+	@OrderBy("name asc")
 	private Collection<Role> roles;
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties({"user", "tags"})
+	@OrderBy("id desc")
 	private Collection<Note> notes;
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties({"user", "notes"})
+	@OrderBy("name asc")
 	private Collection<Tag> tags;
 		
 	public UserAccount(int id,

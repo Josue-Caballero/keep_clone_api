@@ -32,23 +32,19 @@ public class GlobalExceptionImpl implements GlobalException {
 	@Override
 	public ErrorResponse badException(HttpRequestMethodNotSupportedException exception, String path) {
 		String message = "No se admite peticiones de tipo " + exception.getMethod();
-		
 		List<String> details = Arrays.asList(exception.getSupportedMethods());
-		
 		return new ErrorResponse(message, "Solo se admiten las siguientes peticiones", details, exception, path, HttpStatus.BAD_REQUEST.value());
 	}
 
 	@Override
 	public ErrorResponse badException(MissingRequestHeaderException exception, String path) {
-		return new ErrorResponse("El valor de la cabecera " + exception.getHeaderName() + " no es válido.", 
-     			exception, path, HttpStatus.BAD_REQUEST.value());
+		return new ErrorResponse("El valor de la cabecera " + exception.getHeaderName() + " no es válido.", exception, path, HttpStatus.BAD_REQUEST.value());
 	}
 
 	@Override
 	public ErrorResponse badException(MissingServletRequestParameterException exception, String path) {
-		String message = "El parámetro " + exception.getParameterName() + " es requerido.";
-		String description = "Se esperaba un parametro con el nombre " + exception.getParameterName()+ " de tipo "+ exception.getParameterType();
-		return new ErrorResponse(message, description, exception, path, HttpStatus.BAD_REQUEST.value());
+		String message = "Se esperaba un parametro con el nombre " + exception.getParameterName()+ " de tipo "+ exception.getParameterType();
+		return new ErrorResponse(message, exception, path, HttpStatus.BAD_REQUEST.value());
 	}
 
 	@Override
@@ -63,13 +59,12 @@ public class GlobalExceptionImpl implements GlobalException {
 	public ErrorResponse badException(MethodArgumentNotValidException exception, String path) {
 		BindingResult bindingResult = exception.getBindingResult();
 		
-		String message = "Error en " + bindingResult.getObjectName();
-		String description = "Ha ocurrido un error al validar los campos de "+ bindingResult.getObjectName();
+		String message = "Ha ocurrido un error al validar los campos de "+ bindingResult.getObjectName();
 		List<FieldError> errors = bindingResult.getFieldErrors();
 		List<String> listErrors = new ArrayList<String>();
 		
 		errors.forEach(e -> listErrors.add(e.getDefaultMessage()));
-		return new ErrorResponse(message, description, listErrors, exception, path, HttpStatus.BAD_REQUEST.value());
+		return new ErrorResponse(message, listErrors, exception, path, HttpStatus.BAD_REQUEST.value());
 	}
 
 	@Override
@@ -79,12 +74,12 @@ public class GlobalExceptionImpl implements GlobalException {
 	
 	@Override
 	public ErrorResponse badException(BadRequestException exception, String path) {
-		return new ErrorResponse("Error de mala petición", exception.getMessage(), exception, path, HttpStatus.BAD_REQUEST.value());
+		return new ErrorResponse(exception.getMessage(), exception, path, HttpStatus.BAD_REQUEST.value());
 	}
 
 	@Override
 	public ErrorResponse notfoundException(NoHandlerFoundException exception, String path) {
-		return new ErrorResponse("No encontrado.", "No se ha encontrado la ruta solicitada.", exception, path, HttpStatus.NOT_FOUND.value());
+		return new ErrorResponse("No se ha encontrado la ruta solicitada.", exception, path, HttpStatus.NOT_FOUND.value());
 	}
 
 	@Override

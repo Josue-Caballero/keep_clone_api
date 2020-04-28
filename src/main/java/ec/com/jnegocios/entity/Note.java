@@ -16,6 +16,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -53,11 +54,14 @@ public class Note implements Serializable {
 	
 	@OneToMany(mappedBy = "note", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties({"note"})
+	@OrderBy("updatedAt desc")
 	private Collection<Image> images;
 	
 	@ManyToMany
-	@JoinTable(name = "note_tags", joinColumns = @JoinColumn(name = "note_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name="tag_id", referencedColumnName = "id"))
+	@JoinTable(name = "note_tags", joinColumns = @JoinColumn(name = "note_id", referencedColumnName = "id"), 
+							inverseJoinColumns = @JoinColumn(name="tag_id", referencedColumnName = "id"))
 	@JsonIgnoreProperties({"user", "notes"})
+	@OrderBy("name asc")
 	private Collection<Tag> tags;
 	
 	
