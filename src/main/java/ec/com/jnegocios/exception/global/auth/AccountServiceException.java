@@ -2,10 +2,8 @@
 package ec.com.jnegocios.exception.global.auth;
 
 /**
- * Execption for account service issues.
- * Data binding validation.
- * Token email validation.
- * Create account validation
+ * Execption thrown when an AccountService fail, such as 
+ * data binding, token email or create account validation.
  */
 public class AccountServiceException extends RuntimeException {
 

@@ -1,6 +1,8 @@
 
 package ec.com.jnegocios.api.auth;
 
+import java.time.LocalDateTime;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ec.com.jnegocios.entity.UserAccount;
+import ec.com.jnegocios.exception.global.auth.AccountServiceException;
+import ec.com.jnegocios.repository.UserRepository;
 import ec.com.jnegocios.service.auth.AccountControllerService;
 
 @RestController
@@ -21,14 +25,24 @@ import ec.com.jnegocios.service.auth.AccountControllerService;
 public class AccountController {
 
 	@Autowired
-	AccountControllerService accountControllerService;
+	private AccountControllerService accountService;
+
+	@Autowired
+	private UserRepository userAccountRepository;
 
 	@PostMapping("/account")
-	public UserAccount createAccount(@Valid @RequestBody UserAccount userAccount ) {
+	public UserAccount createAccount( 
+		@Valid @RequestBody UserAccount userAccount ) {
 
-		accountControllerService
-			.validateAccountData(userAccount)
-			.createAccount(userAccount);
+		accountService.validateAccountData(userAccount);
+		
+		userAccount.setUpdatedAt( LocalDateTime.now() );
+		userAccount = userAccountRepository.save(userAccount);
+
+		if(userAccount == null) { 
+			throw new AccountServiceException("Couldn't save account"); }
+
+		accountService.sendEmailVerificationToken(userAccount);
 
 		return userAccount;
 
@@ -44,15 +58,24 @@ public class AccountController {
 	@DeleteMapping("/account")
 	public UserAccount deleteteAccount( @RequestBody UserAccount userAccount ) {
 
-		return accountControllerService.deleteAccount(userAccount);
+		int userId = userAccount.getId();
+		
+		if( !userAccountRepository.existsById(userId) ) { 
+			throw new AccountServiceException(
+				"The account you want to delete does not exist"); }
+		
+		userAccount = userAccountRepository.findById(userId).get();
+		userAccountRepository.deleteById(userId); 
+
+		return userAccount;
 
 	}
 
 	// Get only for fast test, change to PostMapping
 	@GetMapping("/verify-account")
-	public String verifyAccount(@RequestParam("token") String token) {
+	public String verifyAccount( @RequestParam("token") String token ) {
 
-		if( accountControllerService.validateAccount(token) ) { 
+		if( accountService.validateToken(token) ) { 
 			return "Success account verification"; }
 		
 		return "Verification token has expired";

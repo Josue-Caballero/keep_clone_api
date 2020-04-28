@@ -29,15 +29,15 @@ public class Handler {
 	
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({
-			BadRequestException.class,
-			AccountServiceException.class,
-            org.springframework.dao.DuplicateKeyException.class,
-            org.springframework.web.HttpRequestMethodNotSupportedException.class,
-            org.springframework.web.bind.MissingRequestHeaderException.class,
-            org.springframework.web.bind.MissingServletRequestParameterException.class,
-            org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class,
-            org.springframework.http.converter.HttpMessageNotReadableException.class,
-            org.springframework.web.bind.MethodArgumentNotValidException.class
+		BadRequestException.class,
+		AccountServiceException.class,
+		org.springframework.dao.DuplicateKeyException.class,
+		org.springframework.web.HttpRequestMethodNotSupportedException.class,
+		org.springframework.web.bind.MissingRequestHeaderException.class,
+		org.springframework.web.bind.MissingServletRequestParameterException.class,
+		org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class,
+		org.springframework.http.converter.HttpMessageNotReadableException.class,
+		org.springframework.web.bind.MethodArgumentNotValidException.class
     })
     public ErrorResponse badRequestException(HttpServletRequest request, Exception exception) {
     	return global.Ups(exception, request.getRequestURI());

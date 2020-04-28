@@ -6,14 +6,6 @@ import ec.com.jnegocios.exception.global.auth.AccountServiceException;
 
 public interface AccountControllerService {
 	
-	/**
-	 * Validate the account, verify the validation token.
-	 * @param token a string with random alfphanumeric characters
-	 * @return true if is a valid token, another case false or AccountServiceException
-	 * @throws AccountServiceException
-	 */
-	boolean validateAccount(String token) throws AccountServiceException;
-
 	/** 
 	 * Validate the linkage data of request body.
 	 * Just validate five fields, username, email, password,
@@ -26,25 +18,36 @@ public interface AccountControllerService {
 		throws AccountServiceException;
 
 	/**
-	 * Create a new account and launch account validation.
-	 * @param userAccount UserAccount object of data binding
+	 * Create and send an email with the validation token.
+	 * @param account an account that requires verification, is a saved account entity
 	 * @return the current instance of service
 	 */
-	UserAccount createAccount(UserAccount userAccount) 
+	AccountControllerService sendEmailVerificationToken(UserAccount account);
+
+	/**
+	 * Resend the validation token to user account email, 
+	 * if the email has not been sent to the email account.
+	 * @param account an account that requires a new validation token, is a saved account entity
+	 * @return the current instance of service
+	 * @throws AccountServiceException
+	 */
+	AccountControllerService resendEmailValidationToken(UserAccount account)
 		throws AccountServiceException;
 
 	/**
-	 * Update an existing account.
-	 * @param userAccount UserAccount object of data binding
-	 * @return the current instance of service
+	 * Validate the token sended to user account email.
+	 * @param token a string with random alfphanumeric characters
+	 * @return true if is a valid token, another case false or AccountServiceException
+	 * @throws AccountServiceException
 	 */
-	UserAccount updateAccount(UserAccount userAccount);
+	boolean validateToken(String token) throws AccountServiceException;
 
 	/**
-	 * Delete an existing account.
-	 * @param userAccount UserAccount object of data binding
-	 * @return the current instance of service
+	 * 	 * Check if a validation token has already been validated.
+	 * @param token a string with random alfphanumeric characters
+	 * @return true if the validation token is valid and has been validated, another case false or AccountServiceException
+	 * @throws AccountServiceException
 	 */
-	UserAccount deleteAccount(UserAccount userAccount);
-	
+	boolean isTokenValidate(String token) throws AccountServiceException;
+		
 }
