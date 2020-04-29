@@ -1,5 +1,4 @@
 package ec.com.jnegocios;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -11,5 +10,4 @@ public class KeepCloneApiApplication {
 		SpringApplication.run(KeepCloneApiApplication.class, args);
 
 	}
-
 }

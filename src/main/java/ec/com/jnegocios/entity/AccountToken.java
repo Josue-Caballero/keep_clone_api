@@ -2,23 +2,26 @@ package ec.com.jnegocios.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import ec.com.jnegocios.util.enums.EnumToken;
+
 @Entity
-@Table(name = "registration_token")
+@Table(name = "account_token")
 @JsonInclude(Include.NON_NULL)
-public class RegistrationToken implements Serializable {
+public class AccountToken implements Serializable {
 
 	private static final long serialVersionUID = -2820331992177022446L;
 	
@@ -26,26 +29,34 @@ public class RegistrationToken implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
-	@OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-	@JsonIgnoreProperties({"registrationToken", "notes", "tags"})
+	@ManyToOne
+    @JsonIgnoreProperties({"registrationTokens", "notes", "tags"})
 	private UserAccount user;
 	
+	@NotEmpty(message = "El token es requerido.")
 	private String token;
 	
+	@NotEmpty(message = "El valor de la expiración es requerido.")
 	private Long expiration;
 	
 	private boolean validate;
 	
-	public RegistrationToken() {}
+	@NotNull(message = "El tipo de token no puede ser nulo.")
+	@Column(name = "type_token")
+	private EnumToken typetoken;
+	
+	public AccountToken() {}
 
-	public RegistrationToken(int id, UserAccount user, String token, Long expiration, boolean validate) {
+	public AccountToken(int id, UserAccount user, @NotEmpty(message = "El token es requerido.") String token,
+			@NotEmpty(message = "El valor de la expiración es requerido.") Long expiration, boolean validate,
+			@NotNull(message = "El tipo de token no puede ser nulo.") EnumToken typetoken) {
 		super();
 		this.id = id;
 		this.user = user;
 		this.token = token;
 		this.expiration = expiration;
 		this.validate = validate;
+		this.typetoken = typetoken;
 	}
 
 	public int getId() {
@@ -87,6 +98,14 @@ public class RegistrationToken implements Serializable {
 	public void setValidate(boolean validate) {
 		this.validate = validate;
 	}
+	
+	public EnumToken getTypetoken() {
+		return typetoken;
+	}
+
+	public void setTypetoken(EnumToken typetoken) {
+		this.typetoken = typetoken;
+	}
 
 	@Override
 	public int hashCode() {
@@ -104,7 +123,7 @@ public class RegistrationToken implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		RegistrationToken other = (RegistrationToken) obj;
+		AccountToken other = (AccountToken) obj;
 		if (id != other.id)
 			return false;
 		return true;
@@ -112,8 +131,8 @@ public class RegistrationToken implements Serializable {
 
 	@Override
 	public String toString() {
-		return "RegistrationToken [id=" + id + ", user=" + user + ", token=" + token + ", expiration=" + expiration
-				+ ", validate=" + validate + "]";
+		return "AccountToken [id=" + id + ", user=" + user + ", token=" + token + ", expiration=" + expiration
+				+ ", validate=" + validate + ", typetoken=" + typetoken + "]";
 	}
 	
 }

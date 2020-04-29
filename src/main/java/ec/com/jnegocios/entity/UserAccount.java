@@ -12,7 +12,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
@@ -70,11 +69,7 @@ public class UserAccount implements Serializable {
 	
 	private boolean darkmode;
 	
-	private Long token_exp;
-	
-	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-	@JsonIgnoreProperties({"user"})
-	private RegistrationToken registrationToken;
+	private Long token_exp;	
 	
 	@Column(name = "created_at", updatable = false)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
@@ -101,14 +96,18 @@ public class UserAccount implements Serializable {
 	@OrderBy("name asc")
 	private Collection<Tag> tags;
 		
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonIgnoreProperties({"user"})
+	@OrderBy("id asc")
+	private Collection<AccountToken> accountTokens;
+	
 	public UserAccount(int id,
 			@Size(min = 3, max = 155, message = "El nombre debe ser mayor a 3 y menor a 155 caracteres.") @NotEmpty(message = "El nombre es obligatorio.") String name,
 			@Size(min = 3, max = 155, message = "El apellido debe ser mayor a 3 y menor a 155 caracteres.") @NotEmpty(message = "El apellido es obligatorio.") String lastname,
 			@Size(min = 3, max = 16, message = "El nombre de usuario debe ser mayor a 3 y menor a 16 caracteres.") @NotEmpty(message = "El nombre de usuario es obligatorio.") String username,
 			@Email(message = "El correo no es válido.") @Size(min = 5, max = 255, message = "El correo debe ser mayor a 5 y menor a 255 caracteres.") @NotEmpty(message = "El correo es obligatorio.") String email,
 			@NotEmpty(message = "La contraseña es obligatoria.") String password, String photo, String storageUrl,
-			boolean enabled, boolean darkmode, Long token_exp, RegistrationToken registrationToken,
-			LocalDateTime createdAt, LocalDateTime updatedAt) {
+			boolean enabled, boolean darkmode, Long token_exp, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -121,7 +120,6 @@ public class UserAccount implements Serializable {
 		this.enabled = enabled;
 		this.darkmode = darkmode;
 		this.token_exp = token_exp;
-		this.registrationToken = registrationToken;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}
@@ -131,6 +129,7 @@ public class UserAccount implements Serializable {
 		this.roles = new ArrayList<Role>();
 		this.notes = new ArrayList<Note>();
 		this.tags = new ArrayList<Tag>();
+		this.accountTokens = new ArrayList<>();
 		this.setCreatedAt( LocalDateTime.now() );
 		this.setEnabled( false );
 		this.setDarkmode( false );
@@ -271,17 +270,16 @@ public class UserAccount implements Serializable {
 		this.tags = tags;
 	}
 	
-	public RegistrationToken getRegistrationToken() {
-		return registrationToken;
+	public Collection<AccountToken> getAccountTokens() {
+		return accountTokens;
 	}
 
-	public void setRegistrationToken(RegistrationToken registrationToken) {
-		this.registrationToken = registrationToken;
+	public void setAccountTokens(Collection<AccountToken> accountTokens) {
+		this.accountTokens = accountTokens;
 	}
-	
-	
-	
 
+	
+	
 	public void addRole (Role role)
 	{
 		this.roles.add(role);
@@ -354,14 +352,13 @@ public class UserAccount implements Serializable {
 			return false;
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "UserAccount [id=" + id + ", name=" + name + ", lastname=" + lastname + ", username=" + username
 				+ ", email=" + email + ", password=" + password + ", photo=" + photo + ", storageUrl=" + storageUrl
-				+ ", enabled=" + enabled + ", darkmode=" + darkmode + ", token_exp=" + token_exp
-				+ ", registrationToken=" + registrationToken + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
-				+ "]";
+				+ ", enabled=" + enabled + ", darkmode=" + darkmode + ", token_exp=" + token_exp + ", createdAt="
+				+ createdAt + ", updatedAt=" + updatedAt + "]";
 	}
-	
+		
 }

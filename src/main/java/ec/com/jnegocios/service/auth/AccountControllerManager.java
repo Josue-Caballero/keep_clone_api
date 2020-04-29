@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import ec.com.jnegocios.entity.RegistrationToken;
+import ec.com.jnegocios.entity.AccountToken;
 import ec.com.jnegocios.entity.UserAccount;
 import ec.com.jnegocios.exception.global.auth.AccountServiceException;
-import ec.com.jnegocios.repository.RegistrationTokenRepository;
+import ec.com.jnegocios.repository.AccountTokenRepository;
 import ec.com.jnegocios.repository.UserRepository;
 import ec.com.jnegocios.service.mail.MailSenderService;
 
@@ -33,7 +33,7 @@ public class AccountControllerManager implements AccountControllerService {
 	private UserRepository userAccountRepository;
 
 	@Autowired
-	RegistrationTokenRepository regTokenRepository;
+	AccountTokenRepository regTokenRepository;
 		
 	public AccountControllerManager validateAccountData(UserAccount userAccount)
 		throws AccountServiceException {
@@ -54,7 +54,7 @@ public class AccountControllerManager implements AccountControllerService {
 
 	public boolean isTokenValidate(String token) {
 		
-		RegistrationToken regToken = regTokenRepository.findByToken(token);
+		AccountToken regToken = regTokenRepository.findByToken(token);
 		
 		if( regToken == null ) {
 			throw new 
@@ -64,10 +64,10 @@ public class AccountControllerManager implements AccountControllerService {
 		
 	}
 
-	private RegistrationToken generateValidationToken(UserAccount account) {
+	private AccountToken generateValidationToken(UserAccount account) {
 
 		Date currentDate = new Date();
-		RegistrationToken regToken = new RegistrationToken();
+		AccountToken regToken = new AccountToken();
 		
 		regToken.setUser(account);
 		regToken.setToken( 
@@ -82,11 +82,12 @@ public class AccountControllerManager implements AccountControllerService {
 	public AccountControllerManager resendEmailValidationToken(
 		UserAccount account) {
 		
-		RegistrationToken regToken = account.getRegistrationToken();
+		//AccountToken regToken = account.getRegistrationToken();
+		AccountToken regToken = account.getRegistrationToken();
 
 		if( !regToken.isValidate() ) { 
 		
-			RegistrationToken tmpToken = generateValidationToken(account);
+			AccountToken tmpToken = generateValidationToken(account);
 			regToken.setToken(tmpToken.getToken());
 			regToken.setExpiration(tmpToken.getExpiration());
 
@@ -100,7 +101,7 @@ public class AccountControllerManager implements AccountControllerService {
 		return this;
 	}
 
-	private void sendValidationToken(String email, RegistrationToken regToken) {
+	private void sendValidationToken(String email, AccountToken regToken) {
 
 		Map<String, String> validationData = new HashMap<>();
 		validationData.put("validation_url", validationUrl);
@@ -114,7 +115,7 @@ public class AccountControllerManager implements AccountControllerService {
 	public AccountControllerManager sendEmailVerificationToken(
 		UserAccount account) {
 
-		RegistrationToken regToken = generateValidationToken(account);
+		AccountToken regToken = generateValidationToken(account);
 		
 		sendValidationToken(account.getEmail(), regToken);
 		regTokenRepository.save(regToken);
@@ -126,7 +127,7 @@ public class AccountControllerManager implements AccountControllerService {
 	public boolean validateToken(String token) {
 		
 		Date currentTime = new Date();
-		RegistrationToken regToken = regTokenRepository.findByToken(token);
+		AccountToken regToken = regTokenRepository.findByToken(token);
 		
 		if( regToken == null ) {
 			throw new 
