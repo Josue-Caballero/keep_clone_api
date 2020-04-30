@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ec.com.jnegocios.entity.AccountToken;
 import ec.com.jnegocios.entity.UserAccount;
 import ec.com.jnegocios.exception.global.auth.AccountServiceException;
 import ec.com.jnegocios.repository.UserRepository;
 import ec.com.jnegocios.service.auth.AccountControllerService;
+import ec.com.jnegocios.util.enums.EnumToken;
 
 @RestController
 @RequestMapping("/auth")
@@ -42,7 +44,8 @@ public class AccountController {
 		if(userAccount == null) { 
 			throw new AccountServiceException("Couldn't save account"); }
 
-		accountService.sendEmailVerificationToken(userAccount);
+		accountService.sendEmailVerificationToken(
+			userAccount, EnumToken.REGISTRATION);
 
 		return userAccount;
 
@@ -58,14 +61,22 @@ public class AccountController {
 	@DeleteMapping("/account")
 	public UserAccount deleteteAccount( @RequestBody UserAccount userAccount ) {
 
-		int userId = userAccount.getId();
+		userAccount = userAccountRepository.findByEmail( 
+			userAccount.getEmail() );
 		
-		if( !userAccountRepository.existsById(userId) ) { 
+		if( userAccount == null ) { 
 			throw new AccountServiceException(
 				"The account you want to delete does not exist"); }
 		
-		userAccount = userAccountRepository.findById(userId).get();
-		userAccountRepository.deleteById(userId); 
+		AccountToken accountToken = accountService.getTokenByType(
+			userAccount, EnumToken.UNSUBSCRIBE);
+		
+		if( accountToken != null ) { 
+			throw new AccountServiceException(
+				"The account cannot have two unsubscribe token"); }
+		
+		accountService.sendEmailVerificationToken(
+			userAccount, EnumToken.UNSUBSCRIBE);
 
 		return userAccount;
 
@@ -79,6 +90,56 @@ public class AccountController {
 			return "Success account verification"; }
 		
 		return "Verification token has expired";
+
+	}
+
+	// Get only for fast test, change to PostMapping
+	@GetMapping("/verify-unsubscribe")
+	public String verifyUnsubscribe( @RequestParam("token") String token ) {
+
+		if( accountService.validateToken(token) ) { 
+			return "The account has been successfully deleted"; }
+		
+		return "Verification token has expired";
+
+	}
+	
+	@PostMapping("/resend-verification")
+	public String resendVerifyAccount( @RequestBody UserAccount userAccount ) {
+
+		userAccount = userAccountRepository.findByEmail(userAccount.getEmail());
+		
+		if(userAccount == null) { 
+			throw new AccountServiceException(
+				"A valid email is needed to send verification"); }
+				
+		accountService.resendEmailValidationToken(
+			userAccount, EnumToken.REGISTRATION);
+
+		return "Verification token is resend";
+
+	}
+	
+	@PostMapping("/resend-unsubscribe")
+	public String resendUnsubscribeAccount( @RequestBody UserAccount userAccount ) {
+
+		userAccount = userAccountRepository.findByEmail(userAccount.getEmail());
+	
+		if(userAccount == null) { 
+			throw new AccountServiceException(
+				"A valid email is needed to send unsubscription"); }
+	
+		AccountToken accountToken = accountService.getTokenByType(
+			userAccount, EnumToken.UNSUBSCRIBE);
+	
+		if( accountToken == null ) {
+			throw new AccountServiceException(
+				"The unsubscribe token for this account does not exist"); }
+
+		accountService
+			.resendEmailValidationToken(userAccount, EnumToken.UNSUBSCRIBE);
+
+		return "Unsubscribe token is resend";
 
 	}
 

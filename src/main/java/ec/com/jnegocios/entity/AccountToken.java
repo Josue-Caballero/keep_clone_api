@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -30,26 +32,40 @@ public class AccountToken implements Serializable {
 	private int id;
 	
 	@ManyToOne
-    @JsonIgnoreProperties({"registrationTokens", "notes", "tags"})
+    @JsonIgnoreProperties({"accountTokens", "notes", "tags"})
 	private UserAccount user;
 	
 	@NotEmpty(message = "El token es requerido.")
 	private String token;
 	
-	@NotEmpty(message = "El valor de la expiración es requerido.")
 	private Long expiration;
 	
 	private boolean validate;
 	
+	@Enumerated(EnumType.STRING)
 	@NotNull(message = "El tipo de token no puede ser nulo.")
 	@Column(name = "type_token")
 	private EnumToken typetoken;
 	
 	public AccountToken() {}
 
+	private AccountToken(long expiration, EnumToken tokenType) {
+
+		this.expiration = expiration;
+		this.typetoken = tokenType;
+
+	}
+
+	public static AccountToken withExpirationAndType(
+		long expiration, EnumToken tokenType) {
+
+		return new AccountToken(expiration, tokenType);
+
+	}
+
 	public AccountToken(int id, UserAccount user, @NotEmpty(message = "El token es requerido.") String token,
-			@NotEmpty(message = "El valor de la expiración es requerido.") Long expiration, boolean validate,
-			@NotNull(message = "El tipo de token no puede ser nulo.") EnumToken typetoken) {
+			Long expiration, boolean validate,
+			EnumToken typetoken) {
 		super();
 		this.id = id;
 		this.user = user;

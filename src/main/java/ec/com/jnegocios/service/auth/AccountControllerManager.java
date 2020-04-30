@@ -17,14 +17,21 @@ import ec.com.jnegocios.exception.global.auth.AccountServiceException;
 import ec.com.jnegocios.repository.AccountTokenRepository;
 import ec.com.jnegocios.repository.UserRepository;
 import ec.com.jnegocios.service.mail.MailSenderService;
+import ec.com.jnegocios.util.enums.EnumToken;
 
 @Service
 public class AccountControllerManager implements AccountControllerService {
 
 	private final long TOKEN_EXPIRATION = 3600000 * 2;
 
-	@Value("${app.url.account.validation}")
-	private String validationUrl;
+	@Value("${app.url.account.registration}")
+	private String registrationAccountUrl;
+	
+	@Value("${app.url.account.reset}")
+	private String resetPasswordAccountUrl;
+	
+	@Value("${app.url.account.unsubscribe}")
+	private String unsubscribeAccountUrl;
 
 	@Autowired
 	MailSenderService mailSenderService;
@@ -35,8 +42,8 @@ public class AccountControllerManager implements AccountControllerService {
 	@Autowired
 	AccountTokenRepository regTokenRepository;
 		
-	public AccountControllerManager validateAccountData(UserAccount userAccount)
-		throws AccountServiceException {
+	public AccountControllerManager validateAccountData(
+		UserAccount userAccount) throws AccountServiceException {
 		
 		String email = userAccount.getEmail();
 		String username = userAccount.getUsername();
@@ -52,72 +59,79 @@ public class AccountControllerManager implements AccountControllerService {
 
 	}
 
-	public boolean isTokenValidate(String token) {
-		
-		AccountToken regToken = regTokenRepository.findByToken(token);
-		
-		if( regToken == null ) {
-			throw new 
-				AccountServiceException("The token sended does not exist"); }
-			
-		return regToken.isValidate();
-		
-	}
+	private AccountToken generateValidationToken( 
+		UserAccount account, EnumToken tokenType ) {
 
-	private AccountToken generateValidationToken(UserAccount account) {
+		long now = (new Date()).getTime();
 
-		Date currentDate = new Date();
-		AccountToken regToken = new AccountToken();
+		AccountToken regToken = AccountToken.withExpirationAndType(
+			now + TOKEN_EXPIRATION, tokenType);
 		
 		regToken.setUser(account);
-		regToken.setToken( 
-			String.format("%s-%d", UUID.randomUUID(), currentDate.getTime()) );
-		regToken.setExpiration(currentDate.getTime() + TOKEN_EXPIRATION);
-		regToken.setValidate(false);
+		regToken.setToken( String.format("%s-%d", UUID.randomUUID(), now) );
 
 		return regToken;
 
 	}
 	
 	public AccountControllerManager resendEmailValidationToken(
-		UserAccount account) {
+		UserAccount account, EnumToken tokenType ) {
 		
-		//AccountToken regToken = account.getRegistrationToken();
-		AccountToken regToken = account.getRegistrationToken();
+		AccountToken regToken = getTokenByType(account, tokenType);
 
-		if( !regToken.isValidate() ) { 
-		
-			AccountToken tmpToken = generateValidationToken(account);
-			regToken.setToken(tmpToken.getToken());
-			regToken.setExpiration(tmpToken.getExpiration());
+		if( regToken == null ) { 
+			throw new 
+				AccountServiceException(
+					"The account don't have this type of validation token"); }
+		else if( regToken.isValidate() ) {
+			throw new 
+				AccountServiceException("The token is already verified"); }
 
-			sendValidationToken(regToken.getUser().getEmail(), regToken);
-			regTokenRepository.save(regToken);
+		AccountToken tmpToken = generateValidationToken(account, tokenType);
+		regToken.setToken(tmpToken.getToken());
+		regToken.setExpiration(tmpToken.getExpiration());
 
-			tmpToken = null;
-		
-		}
+		sendValidationToken(regToken.getUser().getEmail(), regToken, tokenType);
+		regTokenRepository.save(regToken);
+
+		tmpToken = null;
 
 		return this;
+	
 	}
 
-	private void sendValidationToken(String email, AccountToken regToken) {
+	private void sendValidationToken(String email, AccountToken regToken, 
+		EnumToken tokenType) {
 
+		String subject = "Complete Registration With Keep Clone";
 		Map<String, String> validationData = new HashMap<>();
-		validationData.put("validation_url", validationUrl);
 		validationData.put("validation_token", regToken.getToken());
 		
-		mailSenderService.sendEmailTemplate("validate_account", validationData, 
-			email, "Complete Registration With Keep Clone");
+		if ( tokenType == EnumToken.RESET ) {
+			
+			validationData.put("validation_url", resetPasswordAccountUrl);
+			subject = "Complete Reset Password";
+			
+		} else if( tokenType == EnumToken.UNSUBSCRIBE ) {
+			
+			validationData.put("validation_url", unsubscribeAccountUrl);
+			subject = "Complete Unsubscribe";
+		
+		} else { 
+			validationData.put("validation_url", registrationAccountUrl); }
+			
+		mailSenderService.sendEmailTemplate(
+			"validate_token", validationData, email, subject);	
 
 	}
 
 	public AccountControllerManager sendEmailVerificationToken(
-		UserAccount account) {
+		UserAccount account, EnumToken tokenType) {
 
-		AccountToken regToken = generateValidationToken(account);
-		
-		sendValidationToken(account.getEmail(), regToken);
+		AccountToken regToken = generateValidationToken(account, tokenType);
+
+		sendValidationToken(account.getEmail(), regToken, tokenType);
+		// account.getAccountTokens().add(regToken);
 		regTokenRepository.save(regToken);
 		
 		return this;
@@ -137,17 +151,61 @@ public class AccountControllerManager implements AccountControllerService {
 			|| ( (regToken.getExpiration() - currentTime.getTime()) <= 0 ) ) {
 				return false; }
 
-		UserAccount account = userAccountRepository.findById( 
-			regToken.getUser().getId() ).get();
+		switch ( regToken.getTypetoken() ) {
+			
+			case REGISTRATION:
+				
+				validateRegistrationToken( regToken.getUser() );								
+				regToken.setValidate(true);
+				regTokenRepository.save(regToken);
+				
+				break;
+			
+			case RESET:
+
+				validateResetToken( regToken.getUser() );	
+				regToken.setValidate(true);
+				regTokenRepository.save(regToken);
+			
+				break;
+			
+			case UNSUBSCRIBE:
+			
+				userAccountRepository.deleteById( regToken.getUser().getId() );
+				
+				break;
+		
+			default:
+				throw new AccountServiceException("The token sended is invalid");
+		
+		}
+
+		return true;
+
+	}
+
+	private void validateRegistrationToken(UserAccount account) {
 		
 		account.setEnabled(true);
 		account.setUpdatedAt( LocalDateTime.now() );
 		userAccountRepository.save(account);
-			
-		regToken.setValidate(true);
-		regTokenRepository.save(regToken);
 
-		return true;
+	}
+	
+	private void validateResetToken(UserAccount account) {
+
+		// To do..
+
+	}
+
+	public AccountToken getTokenByType(UserAccount account, 
+		EnumToken tokenType) {
+
+		AccountToken validationToken = account.getAccountTokens().stream()
+			.filter( token -> token.getTypetoken().equals(tokenType) )
+			.findAny().orElse(null);
+
+		return validationToken;
 
 	}
 

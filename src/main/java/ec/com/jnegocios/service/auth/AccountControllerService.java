@@ -1,8 +1,10 @@
 
 package ec.com.jnegocios.service.auth;
 
+import ec.com.jnegocios.entity.AccountToken;
 import ec.com.jnegocios.entity.UserAccount;
 import ec.com.jnegocios.exception.global.auth.AccountServiceException;
+import ec.com.jnegocios.util.enums.EnumToken;
 
 public interface AccountControllerService {
 	
@@ -18,24 +20,26 @@ public interface AccountControllerService {
 		throws AccountServiceException;
 
 	/**
-	 * Create and send an email with the validation token.
+	 * Create an email with the verification, reset or unsubscribe token.
 	 * @param account an account that requires verification, is a saved account entity
 	 * @return the current instance of service
 	 */
-	AccountControllerService sendEmailVerificationToken(UserAccount account);
+	AccountControllerService sendEmailVerificationToken(UserAccount account, 
+		EnumToken tokenType);
 
 	/**
-	 * Resend the validation token to user account email, 
+	 * Resend the verification, reset or unsubscribe token to user account email, 
 	 * if the email has not been sent to the email account.
 	 * @param account an account that requires a new validation token, is a saved account entity
 	 * @return the current instance of service
 	 * @throws AccountServiceException
 	 */
-	AccountControllerService resendEmailValidationToken(UserAccount account)
-		throws AccountServiceException;
+	AccountControllerService resendEmailValidationToken(UserAccount account, 
+		EnumToken tokenType) throws AccountServiceException;
 
 	/**
-	 * Validate the token sended to user account email.
+	 * Validate the verification, reset or unsubscribe token sended 
+	 * to user account email.
 	 * @param token a string with random alfphanumeric characters
 	 * @return true if is a valid token, another case false or AccountServiceException
 	 * @throws AccountServiceException
@@ -43,11 +47,11 @@ public interface AccountControllerService {
 	boolean validateToken(String token) throws AccountServiceException;
 
 	/**
-	 * 	 * Check if a validation token has already been validated.
-	 * @param token a string with random alfphanumeric characters
-	 * @return true if the validation token is valid and has been validated, another case false or AccountServiceException
-	 * @throws AccountServiceException
+	 * Get a specific token type.
+	 * @param account an account, is a saved account entity
+	 * @param tokenType a token type register, reset or unsubscribe.
+	 * @return a token for the account of the indicated type 
 	 */
-	boolean isTokenValidate(String token) throws AccountServiceException;
-		
+	public AccountToken getTokenByType(UserAccount account, EnumToken tokenType);
+	
 }

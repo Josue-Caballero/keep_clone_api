@@ -276,9 +276,7 @@ public class UserAccount implements Serializable {
 
 	public void setAccountTokens(Collection<AccountToken> accountTokens) {
 		this.accountTokens = accountTokens;
-	}
-
-	
+	}	
 	
 	public void addRole (Role role)
 	{
