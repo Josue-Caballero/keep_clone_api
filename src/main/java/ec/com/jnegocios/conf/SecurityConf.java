@@ -21,7 +21,8 @@ public class SecurityConf extends WebSecurityConfigurerAdapter {
 		securityConfigManager
 			.loadSessionManagment(http)
 			.loadAcls(http)
-			.loadFilters(http);
+			.loadFilters(
+				http, authenticationManager(), getApplicationContext());
 	
 	}
 

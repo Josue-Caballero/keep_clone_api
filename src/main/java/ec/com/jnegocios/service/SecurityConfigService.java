@@ -1,6 +1,8 @@
 
 package ec.com.jnegocios.service;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
@@ -25,12 +27,16 @@ public interface SecurityConfigService {
 	SecurityConfigService loadAcls(HttpSecurity http) throws Exception;
 
 	/**
-	 * Loads security filters
+	 * * Loads security filters
 	 * @param http web configure adapter HttpSecurity object
+	 * @param authManager autentication manager
+	 * @param appContext application context
 	 * @return the current instance of service
 	 * @throws Exception
 	 */
-	SecurityConfigService loadFilters(HttpSecurity http) throws Exception;
+	SecurityConfigService loadFilters(HttpSecurity http, 
+		AuthenticationManager authManager, ApplicationContext appContext) 
+		throws Exception;
 
 	/**
 	 * Loads authentication service

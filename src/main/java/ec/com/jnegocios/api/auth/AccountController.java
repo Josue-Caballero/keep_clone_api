@@ -61,8 +61,7 @@ public class AccountController {
 	@DeleteMapping("/account")
 	public UserAccount deleteteAccount( @RequestBody UserAccount userAccount ) {
 
-		userAccount = userAccountRepository.findByEmail( 
-			userAccount.getEmail() );
+		userAccount = userAccountRepository.findByEmail(userAccount.getEmail());
 		
 		if( userAccount == null ) { 
 			throw new AccountServiceException(

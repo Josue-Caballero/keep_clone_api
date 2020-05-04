@@ -1,12 +1,18 @@
 
 package ec.com.jnegocios.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.stereotype.Service;
+
+import ec.com.jnegocios.api.filter.JwtAuthenticationFilter;
+import ec.com.jnegocios.service.auth.UserAuthDetailsService;
 
 /**
  * SecurityConfService
@@ -14,6 +20,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class SecurityConfigManager implements SecurityConfigService {
+
+	@Autowired
+	private UserAuthDetailsService userDetailsService;
 
 	public SecurityConfigManager loadSessionManagment(HttpSecurity http) 
 		throws Exception {
@@ -38,10 +47,11 @@ public class SecurityConfigManager implements SecurityConfigService {
 
 	}	
 
-	public SecurityConfigManager loadFilters(HttpSecurity http) 
+	public SecurityConfigManager loadFilters(HttpSecurity http, 
+		AuthenticationManager authManager, ApplicationContext appContext) 
 		throws Exception {
 
-		// All security filters
+		http.addFilter( new JwtAuthenticationFilter(authManager, appContext) );
 		
 		return this;
 
@@ -50,7 +60,9 @@ public class SecurityConfigManager implements SecurityConfigService {
 	public SecurityConfigService loadAuthenticationService(
 		AuthenticationManagerBuilder auth) throws Exception {
 		
-		// Authentication service, UserDetailsService for now
+		auth.userDetailsService(userDetailsService)
+			.passwordEncoder(
+				PasswordEncoderFactories.createDelegatingPasswordEncoder() );
 
 		return this;
 

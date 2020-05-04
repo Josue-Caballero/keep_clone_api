@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import ec.com.jnegocios.entity.AccountToken;
+import ec.com.jnegocios.entity.Role;
 import ec.com.jnegocios.entity.UserAccount;
 import ec.com.jnegocios.exception.global.auth.AccountServiceException;
 import ec.com.jnegocios.repository.AccountTokenRepository;
+import ec.com.jnegocios.repository.RoleRepository;
 import ec.com.jnegocios.repository.UserRepository;
 import ec.com.jnegocios.service.mail.MailSenderService;
 import ec.com.jnegocios.util.enums.EnumToken;
@@ -34,13 +36,16 @@ public class AccountControllerManager implements AccountControllerService {
 	private String unsubscribeAccountUrl;
 
 	@Autowired
-	MailSenderService mailSenderService;
+	private MailSenderService mailSenderService;
 
 	@Autowired
 	private UserRepository userAccountRepository;
 
 	@Autowired
-	AccountTokenRepository regTokenRepository;
+	private AccountTokenRepository regTokenRepository;
+
+	@Autowired
+	private RoleRepository roleRepository;
 		
 	public AccountControllerManager validateAccountData(
 		UserAccount userAccount) throws AccountServiceException {
@@ -186,8 +191,16 @@ public class AccountControllerManager implements AccountControllerService {
 
 	private void validateRegistrationToken(UserAccount account) {
 		
+		Role role = null;
+
 		account.setEnabled(true);
+		role = new Role();
+		role.setUser(account);
+		role.setName("COMMON_USER");
+
+		account.getRoles().add(role);
 		account.setUpdatedAt( LocalDateTime.now() );
+		roleRepository.save(role);
 		userAccountRepository.save(account);
 
 	}

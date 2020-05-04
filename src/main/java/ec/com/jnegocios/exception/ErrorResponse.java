@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -12,6 +13,7 @@ public class ErrorResponse implements Serializable {
 	
 	private static final long serialVersionUID = 6056962266204905573L;
 	
+	@JsonIgnore
 	private LocalDateTime timestamps;
 	
 	private String path;

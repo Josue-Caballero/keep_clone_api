@@ -11,14 +11,16 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import org.springframework.security.core.GrantedAuthority;
 
 @Entity
 @Table(name = "roles")
 @JsonInclude(Include.NON_NULL)
-public class Role implements Serializable {
+public class Role implements Serializable, GrantedAuthority {
 
 	private static final long serialVersionUID = -6110046546369481631L;
 	
@@ -31,7 +33,7 @@ public class Role implements Serializable {
 	private String name;
 	
 	@ManyToOne
-	@JsonIgnoreProperties({"roles", "notes", "tags"})
+	@JsonIgnore // Properties({"roles", "notes", "tags", "accounTokens"})
 	private UserAccount user;
 	
 	public Role() {}
@@ -41,7 +43,7 @@ public class Role implements Serializable {
 			UserAccount user) {
 		super();
 		this.id = id;
-		this.name = name;
+		setName(name);
 		this.user = user;
 	}
 
@@ -58,7 +60,7 @@ public class Role implements Serializable {
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.name = "ROLE_" + name;
 	}
 
 	public UserAccount getUser() {
@@ -75,6 +77,13 @@ public class Role implements Serializable {
 		int result = 1;
 		result = prime * result + id;
 		return result;
+	}
+
+	@Override
+	public String getAuthority() {
+	
+		return this.name;
+	
 	}
 
 	@Override
