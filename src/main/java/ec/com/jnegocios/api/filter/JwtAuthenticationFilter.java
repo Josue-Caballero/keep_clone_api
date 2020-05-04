@@ -23,20 +23,19 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import ec.com.jnegocios.exception.ErrorResponse;
 import ec.com.jnegocios.exception.global.auth.AccountServiceException;
-import ec.com.jnegocios.service.auth.JWTAuthenticationService;
+import ec.com.jnegocios.service.jwt.JWTService;
 
 public class JwtAuthenticationFilter 
 	extends UsernamePasswordAuthenticationFilter {
 
 	private AuthenticationManager authManager;
-	private JWTAuthenticationService jwtAthenticationManager;
+	private JWTService jwtAthenticationManager;
 
 	public JwtAuthenticationFilter(AuthenticationManager authManager, 
 		ApplicationContext context) {
 
 		this.authManager = authManager;
-		this.jwtAthenticationManager = context.getBean(
-			JWTAuthenticationService.class);
+		this.jwtAthenticationManager = context.getBean(JWTService.class);
 		
 		this.setRequiresAuthenticationRequestMatcher( 
 			new AntPathRequestMatcher("/auth/login", "POST") );
@@ -90,10 +89,12 @@ public class JwtAuthenticationFilter
 		
 		Map<String, String> body = new HashMap<>();
 		body.put("message", "Successful authentication, you have a new token");
+		
 
 		res.addHeader(
-			"Authorization", "Bearer " + jwtAthenticationManager.generateToken(
-				(User) authResult.getPrincipal()) 
+			"Authorization", 
+			"Bearer " + jwtAthenticationManager.generateAuthToken(
+				(User) authResult.getPrincipal())
 		);
 		res.getWriter().write( new ObjectMapper().writeValueAsString(body) );
 		res.setStatus(200);

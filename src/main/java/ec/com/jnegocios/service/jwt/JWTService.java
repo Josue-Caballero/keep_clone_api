@@ -1,18 +1,18 @@
 
-package ec.com.jnegocios.service.auth;
+package ec.com.jnegocios.service.jwt;
 
 import org.springframework.security.core.userdetails.User;
 
 import io.jsonwebtoken.Claims;
 
-public interface JWTAuthenticationService {
+public interface JWTService {
 
 	/**
 	 * Generate a new user token
-	 * @param userAuth a instance of authenticated user
+	 * @param userAuth a instance of user details for the authenticated user
 	 * @return alphanumeric token
 	 */
-	String generateToken(User userAuth);
+	String generateAuthToken(User userAuth);
 
 	/**
 	 * Validate token

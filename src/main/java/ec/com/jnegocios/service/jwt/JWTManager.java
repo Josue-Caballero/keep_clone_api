@@ -1,5 +1,5 @@
 
-package ec.com.jnegocios.service.auth;
+package ec.com.jnegocios.service.jwt;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,29 +10,29 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
-import ec.com.jnegocios.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 @Service
-public class JWTAuthenticationManager implements JWTAuthenticationService {
+public class JWTManager implements JWTService {
 
 	private final long TOKEN_EXPIRATION = 60000 * 30;
 	private final byte[] SECRET_KEY = "super_secure_key".getBytes();
 
-	public String generateToken(User userAuth) {
+	public String generateAuthToken(User userAuth) {
 	
-		String 
-			token,
-			username = userAuth.getUsername();
+		String token;
 		Date currentDate;
 		long tokenExpirationTime;
 		Claims tokenClaims = null;
 
 		try {
 			
-			List<Role> roles = new ArrayList(userAuth.getAuthorities());
+			List<String> roles = new ArrayList<>();
+			userAuth.getAuthorities().forEach( (role) -> {
+				roles.add(role.getAuthority().replaceAll("ROLE_", "")); });
+
 			tokenClaims = Jwts.claims();
 			tokenClaims.put("roles", new ObjectMapper()
 				.writeValueAsString(roles));

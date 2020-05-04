@@ -1,7 +1,5 @@
 package ec.com.jnegocios.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,7 +9,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -20,9 +18,8 @@ import org.springframework.security.core.GrantedAuthority;
 @Entity
 @Table(name = "roles")
 @JsonInclude(Include.NON_NULL)
-public class Role implements Serializable, GrantedAuthority {
-
-	private static final long serialVersionUID = -6110046546369481631L;
+@SuppressWarnings("serial")
+public class Role implements GrantedAuthority {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +30,7 @@ public class Role implements Serializable, GrantedAuthority {
 	private String name;
 	
 	@ManyToOne
-	@JsonIgnore // Properties({"roles", "notes", "tags", "accounTokens"})
+	@JsonIgnoreProperties({"roles", "notes", "tags", "accountTokens"})
 	private UserAccount user;
 	
 	public Role() {}
