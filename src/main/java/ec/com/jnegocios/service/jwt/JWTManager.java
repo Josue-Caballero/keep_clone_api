@@ -11,8 +11,12 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 
 @Service
 public class JWTManager implements JWTService {
@@ -55,17 +59,34 @@ public class JWTManager implements JWTService {
 
 	public Claims getTokenClaims(String token) {
 	
-		// To do..
-		
-		return null;
+		Claims tokenClaims = null;
+
+		try {
+			
+			tokenClaims = Jwts.parser()
+				.setSigningKey(SECRET_KEY)
+				.parseClaimsJws(token)
+				.getBody();
+
+			return tokenClaims;
+			
+		} catch (ExpiredJwtException | UnsupportedJwtException 
+			| MalformedJwtException | SignatureException 
+			| IllegalArgumentException e) { return null; }
 	
 	}
 
-	public boolean validateToken(String token) {
+	public boolean isValidToken(String token) {
 	
-		// To do..
-		
-		return false;
+		try {
+			
+			Jwts.parser()
+				.setSigningKey(SECRET_KEY)
+				.parseClaimsJws(token);
+
+			return true;
+			
+		} catch (Exception e) { return false; }
 	
 	}
 	

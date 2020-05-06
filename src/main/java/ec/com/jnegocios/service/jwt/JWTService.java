@@ -9,21 +9,21 @@ public interface JWTService {
 
 	/**
 	 * Generate a new user token
-	 * @param userAuth a instance of user details for the authenticated user
+	 * @param userAuth an instance of user details for the authenticated user
 	 * @return alphanumeric token
 	 */
 	String generateAuthToken(User userAuth);
 
 	/**
 	 * Validate token
-	 * @param token a alphanumeric token
-	 * @return true if token is valid
+	 * @param token an alphanumeric token
+	 * @return true if token is valid or false otherwise
 	 */
-	boolean validateToken(String token);
+	boolean isValidToken(String token);
 
 	/**
 	 * Give the claims of the token
-	 * @param token a alphanumeric token
+	 * @param token an alphanumeric token
 	 * @return token claims
 	 */
 	Claims getTokenClaims(String token);

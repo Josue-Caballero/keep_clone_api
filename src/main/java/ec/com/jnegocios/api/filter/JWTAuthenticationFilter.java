@@ -25,17 +25,17 @@ import ec.com.jnegocios.exception.ErrorResponse;
 import ec.com.jnegocios.exception.global.auth.AccountServiceException;
 import ec.com.jnegocios.service.jwt.JWTService;
 
-public class JwtAuthenticationFilter 
+public class JWTAuthenticationFilter 
 	extends UsernamePasswordAuthenticationFilter {
 
 	private AuthenticationManager authManager;
-	private JWTService jwtAthenticationManager;
+	private JWTService jwtManager;
 
-	public JwtAuthenticationFilter(AuthenticationManager authManager, 
+	public JWTAuthenticationFilter(AuthenticationManager authManager, 
 		ApplicationContext context) {
 
 		this.authManager = authManager;
-		this.jwtAthenticationManager = context.getBean(JWTService.class);
+		this.jwtManager = context.getBean(JWTService.class);
 		
 		this.setRequiresAuthenticationRequestMatcher( 
 			new AntPathRequestMatcher("/auth/login", "POST") );
@@ -93,7 +93,7 @@ public class JwtAuthenticationFilter
 
 		res.addHeader(
 			"Authorization", 
-			"Bearer " + jwtAthenticationManager.generateAuthToken(
+			"Bearer " + jwtManager.generateAuthToken(
 				(User) authResult.getPrincipal())
 		);
 		res.getWriter().write( new ObjectMapper().writeValueAsString(body) );

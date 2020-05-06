@@ -11,7 +11,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.stereotype.Service;
 
-import ec.com.jnegocios.api.filter.JwtAuthenticationFilter;
+import ec.com.jnegocios.api.auth.UserAuthAccessDeniedHandler;
+import ec.com.jnegocios.api.auth.UserNoAuthAccessDeniedHandler;
+import ec.com.jnegocios.api.filter.JWTAuthenticationFilter;
+import ec.com.jnegocios.api.filter.JWTAuthorizationFilter;
 import ec.com.jnegocios.service.auth.UserAuthDetailsService;
 
 /**
@@ -40,8 +43,13 @@ public class SecurityConfigManager implements SecurityConfigService {
 
 		http.authorizeRequests()
 			.antMatchers(HttpMethod.GET, "/").permitAll()
-			.antMatchers("/auth/**").permitAll()
+			.antMatchers("/auth/*").permitAll()
+			.antMatchers("/notes/*").hasAnyRole("COMMON_USER")
+			.antMatchers("/premium-notes").hasAnyRole("PREMIUM_USER")
 			.anyRequest().authenticated();
+		
+		http.exceptionHandling().authenticationEntryPoint( new UserNoAuthAccessDeniedHandler() )
+			.accessDeniedHandler( new UserAuthAccessDeniedHandler() );
 		
 		return this;
 
@@ -51,7 +59,8 @@ public class SecurityConfigManager implements SecurityConfigService {
 		AuthenticationManager authManager, ApplicationContext appContext) 
 		throws Exception {
 
-		http.addFilter( new JwtAuthenticationFilter(authManager, appContext) );
+		http.addFilter( new JWTAuthenticationFilter(authManager, appContext) )
+			.addFilter( new JWTAuthorizationFilter(authManager, appContext) );
 		
 		return this;
 
