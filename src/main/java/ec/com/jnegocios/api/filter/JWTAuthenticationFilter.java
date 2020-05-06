@@ -24,6 +24,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import ec.com.jnegocios.exception.ErrorResponse;
 import ec.com.jnegocios.exception.global.auth.AccountServiceException;
 import ec.com.jnegocios.service.jwt.JWTService;
+import ec.com.jnegocios.util.AppHelper;
 
 public class JWTAuthenticationFilter 
 	extends UsernamePasswordAuthenticationFilter {
@@ -38,10 +39,11 @@ public class JWTAuthenticationFilter
 		this.jwtManager = context.getBean(JWTService.class);
 		
 		this.setRequiresAuthenticationRequestMatcher( 
-			new AntPathRequestMatcher("/auth/login", "POST") );
+			new AntPathRequestMatcher(AppHelper.PREFIX_ACC.concat("/login"), "POST") );
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest req, 
 		HttpServletResponse res) throws AuthenticationException {

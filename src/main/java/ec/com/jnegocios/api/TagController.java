@@ -1,4 +1,4 @@
-package ec.com.jnegocios.api.auth;
+package ec.com.jnegocios.api;
 
 import java.security.Principal;
 import java.util.Collection;
@@ -16,7 +16,7 @@ import ec.com.jnegocios.service.tag.TagService;
 import ec.com.jnegocios.util.AppHelper;
 
 @RestController
-@RequestMapping(AppHelper.PREFIX + "/tags")
+@RequestMapping(AppHelper.PREFIX_TAG)
 public class TagController {
 	
 	@Autowired

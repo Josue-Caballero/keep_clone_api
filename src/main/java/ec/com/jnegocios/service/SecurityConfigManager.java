@@ -44,11 +44,11 @@ public class SecurityConfigManager implements SecurityConfigService {
 
 		http.authorizeRequests()
 			.antMatchers(HttpMethod.GET, "/").permitAll()
-			.antMatchers("/auth/*").permitAll()
-			.antMatchers(AppHelper.PREFIX.concat("/notes/*")).hasAnyRole("COMMON_USER")
-			.antMatchers(AppHelper.PREFIX.concat("/premium-notes")).hasAnyRole("PREMIUM_USER")
-			.antMatchers(HttpMethod.GET, AppHelper.PREFIX.concat("/tags")).hasAnyRole("COMMON_USER")
-			.antMatchers(HttpMethod.GET, AppHelper.PREFIX.concat("/tags/**")).hasAnyRole("COMMON_USER")
+			.antMatchers(AppHelper.PREFIX_ACC.concat("/*")).permitAll()
+			.antMatchers(AppHelper.PREFIX_NOTE.concat("/*")).hasAnyRole("COMMON_USER")
+			.antMatchers(AppHelper.PREFIX_PREMIUM_NOTE).hasAnyRole("PREMIUM_USER")
+			.antMatchers(HttpMethod.GET, AppHelper.PREFIX_TAG).hasAnyRole("COMMON_USER")
+			.antMatchers(HttpMethod.GET, AppHelper.PREFIX_TAG.concat("/**")).hasAnyRole("COMMON_USER")
 			.anyRequest().authenticated();
 		
 		http.exceptionHandling().authenticationEntryPoint( new UserNoAuthAccessDeniedHandler() )

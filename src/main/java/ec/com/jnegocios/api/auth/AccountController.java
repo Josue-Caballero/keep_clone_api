@@ -20,10 +20,11 @@ import ec.com.jnegocios.entity.UserAccount;
 import ec.com.jnegocios.exception.global.auth.AccountServiceException;
 import ec.com.jnegocios.repository.UserRepository;
 import ec.com.jnegocios.service.auth.AccountControllerService;
+import ec.com.jnegocios.util.AppHelper;
 import ec.com.jnegocios.util.enums.EnumToken;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping(AppHelper.PREFIX_ACC)
 public class AccountController {
 
 	@Autowired

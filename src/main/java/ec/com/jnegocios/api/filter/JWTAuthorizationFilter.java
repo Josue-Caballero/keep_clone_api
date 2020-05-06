@@ -76,6 +76,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<GrantedAuthority> getAuthorities(Object rolesClaim) {
 
 		List<String> roles = null;
