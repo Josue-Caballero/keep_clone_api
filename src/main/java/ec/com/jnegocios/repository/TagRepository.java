@@ -10,6 +10,8 @@ public interface TagRepository extends JpaRepository<Tag, Integer>{
 	
 	Collection<Tag> findByUser_Id(int id);
 	
+	Collection<Tag> findByUser_Username(String username);
+	
 	Collection<Tag> findByUser_EnabledFalseAndUser_Id(int id);
 	
 	Collection<Tag> findByUser_EnabledTrueAndUser_Id(int id);

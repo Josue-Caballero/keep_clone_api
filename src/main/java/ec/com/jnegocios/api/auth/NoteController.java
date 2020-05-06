@@ -3,11 +3,14 @@ package ec.com.jnegocios.api.auth;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ec.com.jnegocios.entity.Note;
+import ec.com.jnegocios.util.AppHelper;
 
 @RestController
+@RequestMapping(AppHelper.PREFIX)
 public class NoteController {
 	
 	// Just a test to access the user no auth denied handler

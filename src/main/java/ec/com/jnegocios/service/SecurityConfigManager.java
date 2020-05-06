@@ -16,6 +16,7 @@ import ec.com.jnegocios.api.auth.UserNoAuthAccessDeniedHandler;
 import ec.com.jnegocios.api.filter.JWTAuthenticationFilter;
 import ec.com.jnegocios.api.filter.JWTAuthorizationFilter;
 import ec.com.jnegocios.service.auth.UserAuthDetailsService;
+import ec.com.jnegocios.util.AppHelper;
 
 /**
  * SecurityConfService
@@ -44,8 +45,10 @@ public class SecurityConfigManager implements SecurityConfigService {
 		http.authorizeRequests()
 			.antMatchers(HttpMethod.GET, "/").permitAll()
 			.antMatchers("/auth/*").permitAll()
-			.antMatchers("/notes/*").hasAnyRole("COMMON_USER")
-			.antMatchers("/premium-notes").hasAnyRole("PREMIUM_USER")
+			.antMatchers(AppHelper.PREFIX.concat("/notes/*")).hasAnyRole("COMMON_USER")
+			.antMatchers(AppHelper.PREFIX.concat("/premium-notes")).hasAnyRole("PREMIUM_USER")
+			.antMatchers(HttpMethod.GET, AppHelper.PREFIX.concat("/tags")).hasAnyRole("COMMON_USER")
+			.antMatchers(HttpMethod.GET, AppHelper.PREFIX.concat("/tags/**")).hasAnyRole("COMMON_USER")
 			.anyRequest().authenticated();
 		
 		http.exceptionHandling().authenticationEntryPoint( new UserNoAuthAccessDeniedHandler() )
