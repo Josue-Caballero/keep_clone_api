@@ -13,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OrderBy;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
@@ -61,7 +63,7 @@ public class Tag implements Serializable {
 	private LocalDateTime updatedAt;
 		
 	public Tag() {
-		this.updatedAt = LocalDateTime.now();
+		//this.updatedAt = LocalDateTime.now();
 	}
 
 	public Tag(int id, String name, UserAccount user, LocalDateTime createdAt, LocalDateTime updatedAt) {
@@ -120,7 +122,20 @@ public class Tag implements Serializable {
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
 	}
+	
+	@PrePersist
+	public void preCreated ()
+	{
+		this.createdAt = LocalDateTime.now();
+		this.updatedAt = LocalDateTime.now();
+	}
 
+	@PreUpdate
+	public void preUpdated ()
+	{
+		this.updatedAt = LocalDateTime.now();
+	}
+	
 	@Override
 	public String toString() {
 		return "Tag [id=" + id + ", name=" + name + ", user=" + user + ", createdAt=" + createdAt + ", updatedAt="

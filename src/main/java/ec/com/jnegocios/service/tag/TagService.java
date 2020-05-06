@@ -40,8 +40,15 @@ public interface TagService {
 	 * @throws Exception
 	 * @param a new Tag to create
 	 */
-	Tag save(Tag tag);
+	Tag save(Tag tag, String username);
 	
+	/**
+	 * Save a changes to tag
+	 * @return tag
+	 * @throws Exception
+	 * @param a Tag and id for update
+	 */
+	Tag update(Tag tag, Integer id);
 	
 	/**
 	 * Get collection tags for user
@@ -54,7 +61,6 @@ public interface TagService {
 	/**
 	 * Get collection tags for user
 	 * @return collection tags
-	 * @throws NotFoundException
 	 * @param username
 	 */ 
 	Collection<Tag> findByUsername (String username);
@@ -62,18 +68,31 @@ public interface TagService {
 	/**
 	 * Get collection tags for user disabled
 	 * @return collection tags
-	 * @throws NotFoundException
 	 * @param user_id
 	 */ 
 	Collection<Tag> findByUserDisable (int user_id);
 	
 	/**
+	 * Get collection tags for user disabled
+	 * @return collection tags
+	 * @param username
+	 */ 
+	Collection<Tag> findByUserDisable (String username);
+	
+	
+	/**
 	 * Get collection tags for user enabled
 	 * @return collection tags
-	 * @throws NotFoundException
 	 * @param user_id
 	 */ 
 	Collection<Tag> findByUserEnable (int user_id);
+	
+	/**
+	 * Get collection tags for user enabled
+	 * @return collection tags
+	 * @param username
+	 */ 
+	Collection<Tag> findByUserEnable (String username);
 	
 	/**
 	 * Delete tag by id
