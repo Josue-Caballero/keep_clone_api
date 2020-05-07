@@ -66,6 +66,13 @@ public interface NoteService {
 	Collection<Note> findByUsername (String username);
 		
 	/**
+	 * Get collection paginated Notes for user
+	 * @return collection Notes for page
+	 * @param username, pageable
+	 */ 
+	Page<Note> findByUsername (String username, Pageable pageable);
+	
+	/**
 	 * Get collection Notes filed for user
 	 * @return collection Notes
 	 * @param username
@@ -83,7 +90,7 @@ public interface NoteService {
 	 * Delete Note by id
 	 * @return void
 	 * @throws NotFoundException
-	 * @param user_id
+	 * @param note_id
 	 */ 
 	void delete(Integer id);
 }

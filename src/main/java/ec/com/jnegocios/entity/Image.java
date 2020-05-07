@@ -9,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -49,9 +51,7 @@ public class Image implements Serializable {
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime updatedAt;
 	
-	public Image() {
-		this.updatedAt = LocalDateTime.now();
-	}
+	public Image() {}
 
 	public Image(int id, String nameImage, String storageUrl, Note note, LocalDateTime createdAt,
 			LocalDateTime updatedAt) {
@@ -112,6 +112,19 @@ public class Image implements Serializable {
 		this.updatedAt = updatedAt;
 	}
 
+	@PrePersist
+	public void preCreated ()
+	{
+		this.createdAt = LocalDateTime.now();
+		this.updatedAt = LocalDateTime.now();
+	}
+
+	@PreUpdate
+	public void preUpdated ()
+	{
+		this.updatedAt = LocalDateTime.now();
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

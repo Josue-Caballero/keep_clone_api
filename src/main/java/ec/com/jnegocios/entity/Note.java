@@ -2,8 +2,9 @@ package ec.com.jnegocios.entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,6 +18,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -90,8 +93,8 @@ public class Note implements Serializable {
 	}
 	
 	public Note() {
-		this.updatedAt = LocalDateTime.now();
-		this.images = new ArrayList<Image>();
+		this.images = new HashSet<Image>();
+		this.tags = new HashSet<Tag>();
 	}
 
 	public int getId() {
@@ -162,7 +165,7 @@ public class Note implements Serializable {
 		return images;
 	}
 
-	public void setImages(Collection<Image> images) {
+	public void setImages(Set<Image> images) {
 		this.images = images;
 	}
 		
@@ -170,7 +173,7 @@ public class Note implements Serializable {
 		return tags;
 	}
 
-	public void setTags(Collection<Tag> tags) {
+	public void setTags(Set<Tag> tags) {
 		this.tags = tags;
 	}
 
@@ -213,6 +216,19 @@ public class Note implements Serializable {
 		return true;
 	}
 
+	@PrePersist
+	public void preCreated ()
+	{
+		this.createdAt = LocalDateTime.now();
+		this.updatedAt = LocalDateTime.now();
+	}
+
+	@PreUpdate
+	public void preUpdated ()
+	{
+		this.updatedAt = LocalDateTime.now();
+	}
+	
 	@Override
 	public String toString() {
 		return "Note [id=" + id + ", title=" + title + ", description=" + description + ", color=" + color + ", filed="

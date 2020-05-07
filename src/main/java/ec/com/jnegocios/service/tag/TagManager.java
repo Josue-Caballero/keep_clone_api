@@ -69,11 +69,9 @@ public class TagManager implements TagService {
 	@Transactional
 	@Override
 	public Tag update (Tag tag, Integer id) {
-		Tag tmpTag = this.repoTag.findById(id).orElse(null);
+		Tag tmpTag = this.repoTag.findById(id)
+				.orElseThrow(() -> new NotFoundException("El tag con Id "+ id +" no existe"));
 		
-		if(tmpTag == null)
-			throw new NotFoundException("El tag con Id "+ id +" no existe");
-
 		String nameTag = tag.getName().toLowerCase();
 		Tag _tag = this.repoTag.findByName(nameTag, id);
 		

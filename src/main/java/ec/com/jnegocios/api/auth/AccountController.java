@@ -119,7 +119,7 @@ public class AccountController {
 		return "Verification token is resend";
 
 	}
-	
+
 	@PostMapping("/resend-unsubscribe")
 	public String resendUnsubscribeAccount( @RequestBody UserAccount userAccount ) {
 

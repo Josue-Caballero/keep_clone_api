@@ -21,7 +21,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 @Service
 public class JWTManager implements JWTService {
 
-	private final long TOKEN_EXPIRATION = 60000 * 30;
+	private final long TOKEN_EXPIRATION = 3600000 * 2;
 	private final byte[] SECRET_KEY = "super_secure_key".getBytes();
 
 	public String generateAuthToken(User userAuth) {

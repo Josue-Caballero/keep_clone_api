@@ -62,9 +62,7 @@ public class Tag implements Serializable {
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime updatedAt;
 		
-	public Tag() {
-		//this.updatedAt = LocalDateTime.now();
-	}
+	public Tag() {}
 
 	public Tag(int id, String name, UserAccount user, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		super();

@@ -2,6 +2,8 @@ package ec.com.jnegocios.repository;
 
 import java.util.Collection;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import ec.com.jnegocios.entity.Note;
@@ -20,4 +22,5 @@ public interface NoteRepository extends JpaRepository<Note, Integer>{
 	
 	Collection<Note> findByUser_Username(String username);
 	
+	Page<Note> findByUser_Username(String username, Pageable pageable);
 }

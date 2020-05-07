@@ -49,8 +49,8 @@ public class JWTAuthenticationFilter
 		HttpServletResponse res) throws AuthenticationException {
 		
 		String 
-			username = obtainUsername(req),
-			password = obtainPassword(req);
+			username = req.getParameter("username"),
+			password = req.getParameter("password");
 		UsernamePasswordAuthenticationToken userSigIn = null;
 
 		if( (username == null) || (password == null) ) {
@@ -100,7 +100,7 @@ public class JWTAuthenticationFilter
 		);
 		res.getWriter().write( new ObjectMapper().writeValueAsString(body) );
 		res.setStatus(200);
-		res.setContentType("application/json");
+		res.setContentType(AppHelper.JSON);
 	
 	}
 
@@ -114,7 +114,7 @@ public class JWTAuthenticationFilter
 
         res.getWriter().write( new ObjectMapper().writeValueAsString(error) );
         res.setStatus(401);
-        res.setContentType("application/json");
+        res.setContentType(AppHelper.JSON);
 		
 	}
 	

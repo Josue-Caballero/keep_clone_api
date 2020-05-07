@@ -98,7 +98,7 @@ public interface TagService {
 	 * Delete tag by id
 	 * @return void
 	 * @throws NotFoundException
-	 * @param user_id
+	 * @param tag_id
 	 */ 
 	void delete(Integer id);
 }
