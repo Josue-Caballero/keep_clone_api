@@ -19,6 +19,7 @@ import ec.com.jnegocios.repository.AccountTokenRepository;
 import ec.com.jnegocios.repository.RoleRepository;
 import ec.com.jnegocios.repository.UserRepository;
 import ec.com.jnegocios.service.mail.MailSenderService;
+import ec.com.jnegocios.util.IdentifierGenerator;
 import ec.com.jnegocios.util.enums.EnumToken;
 
 @Service
@@ -52,9 +53,12 @@ public class AccountControllerManager implements AccountControllerService {
 		
 		String email = userAccount.getEmail();
 		String username = userAccount.getUsername();
+		userAccount = userAccountRepository.findByEmail(email);
+		
+		if(userAccount == null) { 
+			userAccount = userAccountRepository.findByUsername(username); }
 
-		if( ( userAccountRepository.findByEmail(email) != null ) 
-			|| ( userAccountRepository.findByUsername(username) != null ) ) { 
+		if( userAccount != null ) { 
 			throw new AccountServiceException(
 				"The sent username or email is already in use"); }
 
@@ -73,7 +77,7 @@ public class AccountControllerManager implements AccountControllerService {
 			now + TOKEN_EXPIRATION, tokenType);
 		
 		regToken.setUser(account);
-		regToken.setToken( String.format("%s-%d", UUID.randomUUID(), now) );
+		regToken.setToken( IdentifierGenerator.generateUniqueTokenId() );
 
 		return regToken;
 

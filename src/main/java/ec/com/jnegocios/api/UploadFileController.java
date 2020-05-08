@@ -1,30 +1,81 @@
+
 package ec.com.jnegocios.api;
 
-import java.io.IOException;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import ec.com.jnegocios.exception.BadRequestException;
+import ec.com.jnegocios.exception.global.file.FileNotSupportException;
+import ec.com.jnegocios.service.upload.FileDetails;
+import ec.com.jnegocios.service.upload.UploadFileControllerService;
 import ec.com.jnegocios.util.AppHelper;
 
-@Controller
+@RestController
+@RequestMapping(AppHelper.PREFIX_UPLOAD)
 public class UploadFileController {
 
-	@RequestMapping(value=AppHelper.PREFIX_IMAGE, method=RequestMethod.POST, headers=("content-type=multipart/form-data"))
-	public ResponseEntity<byte[]> uplaodImage (@RequestParam("image") MultipartFile multipartfile) throws IOException {
-		if(multipartfile.isEmpty())
-			throw new BadRequestException("Seleccione una imagen.");
+	@Autowired
+	private UploadFileControllerService uploadService;
+
+	@PostMapping("/image-account")
+	public ResponseEntity uploadImageAccount (
+		@RequestParam String username, @RequestParam MultipartFile img) {
+
+		if( img.isEmpty() ) {
+			throw new BadRequestException("You have not sent any picture"); }
 		
-		// UPLOAD IMAGE IN STORAGE CLOUD
+		String contentType = img.getContentType();
+		if( !uploadService.isValidImage(contentType) ) {
+			throw new FileNotSupportException(contentType); }
+		
+		FileDetails fileDetails = uploadService.uploadImageAccount(img, username);
+			
+		return ResponseEntity.ok()
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(fileDetails);
+
+	}
+	
+	@PostMapping("/image-note")
+	public ResponseEntity uploadImageNote (
+		@RequestParam Integer noteId, @RequestParam MultipartFile[] img) {
+
+		if( img.length < 0 ) {
+			throw new BadRequestException("You have not sent any picture"); }
+		
+		String contentType;
+		for(int index = 0; index < img.length; index++) {
+
+			contentType = img[index].getContentType();
+			if( !uploadService.isValidImage(img[index].getContentType()) ) {
+				throw new FileNotSupportException(contentType); } 
+			
+		}
+		
+		List<FileDetails> filesDetails = uploadService.uploadImagesNote(img, noteId);
 		
 		return ResponseEntity.ok()
-				.contentType(MediaType.IMAGE_JPEG)
-				.body(multipartfile.getBytes());
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(filesDetails);
+
 	}
+
+	@DeleteMapping("/delete-file")
+	public String deleteImage(@RequestParam String uniqueId) {
+
+		uploadService.deleteFile(uniqueId);
+
+		return "The file " + uniqueId + " is successfuly deleted";
+
+	}
+
 }

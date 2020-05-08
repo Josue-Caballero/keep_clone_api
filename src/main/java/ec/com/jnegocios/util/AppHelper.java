@@ -4,7 +4,7 @@ public class AppHelper {
 	
 	public static final String CROSS_ORIGIN = "*";
 	
-	public static final String PREFIX_IMAGE = "/images";
+	public static final String PREFIX_UPLOAD = "/uploads";
 	
 	public static final String PREFIX_ACC = "/auth";
 	
