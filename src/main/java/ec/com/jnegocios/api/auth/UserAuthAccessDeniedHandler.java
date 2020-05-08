@@ -25,7 +25,7 @@ public class UserAuthAccessDeniedHandler implements AccessDeniedHandler {
 		throws IOException, ServletException {
 		
 		ErrorResponse error = new ErrorResponse(
-			"Premium Api Key is required to access this resource", 
+			"Your user cannot access this resource", 
 			(Exception) accessDeniedEx, 
 			req.getRequestURI(), 
 			403

@@ -66,8 +66,8 @@ public class AccountController {
 		UserAccount user = this.userAccountRepository.findByUsernameOnly(auth.getName().toLowerCase());
 		
 		return ResponseEntity
-				.status(HttpStatus.FOUND)
-				.body(user);
+			.status(HttpStatus.FOUND)
+			.body(user);
 	}
 	
 	@PutMapping(value="/profile", produces = AppHelper.JSON)
@@ -100,13 +100,17 @@ public class AccountController {
 	}
 	
 	@DeleteMapping("/account")
-	public UserAccount deleteAccount( @RequestBody UserAccount userAccount ) {
+	public UserAccount deleteAccount() {
 
-		userAccount = userAccountRepository.findByEmail(userAccount.getEmail());
-		
+		UserAccount userAccount;
+		Authentication authUser;
+
+		authUser = SecurityContextHolder.getContext().getAuthentication();
+		userAccount = userAccountRepository.findByUsername(authUser.getName());
+	
 		if( userAccount == null ) { 
 			throw new AccountServiceException(
-				"The account you want to delete does not exist"); }
+				"You need to be an authenticated user to delete your account"); }
 		
 		AccountToken accountToken = accountService.getTokenByType(
 			userAccount, EnumToken.UNSUBSCRIBE);
@@ -151,7 +155,7 @@ public class AccountController {
 		
 		if(userAccount == null) { 
 			throw new AccountServiceException(
-				"A valid email is needed to send verification"); }
+				"You need a registered email to resend verification"); }
 				
 		accountService.resendEmailValidationToken(
 			userAccount, EnumToken.REGISTRATION);
@@ -161,20 +165,24 @@ public class AccountController {
 	}
 
 	@PostMapping("/resend-unsubscribe")
-	public String resendUnsubscribeAccount( @RequestBody UserAccount userAccount ) {
+	public String resendUnsubscribeAccount() {
 
-		userAccount = userAccountRepository.findByEmail(userAccount.getEmail());
+		UserAccount userAccount;
+		Authentication authUser;
+
+		authUser = SecurityContextHolder.getContext().getAuthentication();
+		userAccount = userAccountRepository.findByUsername(authUser.getName());
 	
 		if(userAccount == null) { 
 			throw new AccountServiceException(
-				"A valid email is needed to send unsubscription"); }
+				"You need to be an authenticated user to resend unsubscribe email"); }
 	
 		AccountToken accountToken = accountService.getTokenByType(
 			userAccount, EnumToken.UNSUBSCRIBE);
 	
 		if( accountToken == null ) {
 			throw new AccountServiceException(
-				"The unsubscribe token for this account does not exist"); }
+				"You dont have an unsubscription proccess active"); }
 
 		accountService
 			.resendEmailValidationToken(userAccount, EnumToken.UNSUBSCRIBE);

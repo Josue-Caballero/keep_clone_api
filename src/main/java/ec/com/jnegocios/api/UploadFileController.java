@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,8 +29,11 @@ public class UploadFileController {
 	private UploadFileControllerService uploadService;
 
 	@PostMapping("/image-account")
-	public ResponseEntity uploadImageAccount (
-		@RequestParam String username, @RequestParam MultipartFile img) {
+	public ResponseEntity uploadImageAccount(@RequestParam MultipartFile img ) {
+
+		Authentication authUser = SecurityContextHolder.getContext()
+			.getAuthentication();
+		String username = authUser.getName();
 
 		if( img.isEmpty() ) {
 			throw new BadRequestException("You have not sent any picture"); }

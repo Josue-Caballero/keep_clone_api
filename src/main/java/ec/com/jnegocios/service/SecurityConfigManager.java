@@ -47,7 +47,6 @@ public class SecurityConfigManager implements SecurityConfigService {
 			.antMatchers(AppHelper.PREFIX_ACC.concat("/*")).permitAll()
 			.antMatchers(AppHelper.PREFIX_NOTE.concat("/*")).hasAnyRole("COMMON_USER")
 			.antMatchers(AppHelper.PREFIX_UPLOAD.concat("/*")).hasAnyRole("COMMON_USER")
-			.antMatchers(AppHelper.PREFIX_PREMIUM_NOTE).hasAnyRole("PREMIUM_USER")
 			.antMatchers(HttpMethod.GET, AppHelper.PREFIX_TAG).hasAnyRole("COMMON_USER")
 			.antMatchers(HttpMethod.GET, AppHelper.PREFIX_TAG.concat("/*")).hasAnyRole("COMMON_USER")
 			.anyRequest().authenticated();

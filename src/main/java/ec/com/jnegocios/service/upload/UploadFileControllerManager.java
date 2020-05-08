@@ -72,8 +72,8 @@ public class UploadFileControllerManager implements UploadFileControllerService 
 		
 		if( uploadFile(file, fileDetails) ) {
 
-			oldImage = account.getStorageUrl();
-			account.setPhoto( fileDetails.getOriginalName() );
+			oldImage = account.getPhoto();
+			account.setPhoto( fileDetails.getUniqueId() );
 			account.setStorageUrl( fileDetails.getStorageUrl() );
 			account.setUpdatedAt( LocalDateTime.now() );
 
@@ -81,7 +81,7 @@ public class UploadFileControllerManager implements UploadFileControllerService 
 
 		} else { throw new FileUploadException(); }
 
-		deleteFile( oldImage.substring(oldImage.lastIndexOf("/") + 1) );
+		deleteFile(oldImage);
 
 		return fileDetails;
 		
@@ -103,7 +103,7 @@ public class UploadFileControllerManager implements UploadFileControllerService 
 				LocalDateTime currentTime = LocalDateTime.now();
 	
 				Image noteImage = new Image(0, 
-					tempFileD.getOriginalName(),
+					tempFileD.getUniqueId(),
 					tempFileD.getStorageUrl(),
 					note, 
 					currentTime, 

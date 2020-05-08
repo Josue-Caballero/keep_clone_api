@@ -12,8 +12,6 @@ public class AppHelper {
 	
 	public static final String PREFIX_NOTE = "/notes";
 	
-	public static final String PREFIX_PREMIUM_NOTE = "/premium-notes";
-	
 	public static final String PREFIX_USER = "/users";
 	
 	public static final String PREFIX_ROLE = "/roles";
