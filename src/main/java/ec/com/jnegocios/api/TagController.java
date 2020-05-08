@@ -7,7 +7,6 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +31,7 @@ public class TagController {
 	 * END POINT GET ALL USER'S TAGS
 	 * /tags
 	 */
-	@GetMapping
+	@GetMapping(produces = AppHelper.JSON)
 	public ResponseEntity<Collection<Tag>> findTagsByUserAuth (Principal auth) {
 		Collection<Tag> tags = serviceTag.findByUsername(auth.getName());
 		return ResponseEntity
@@ -43,7 +42,7 @@ public class TagController {
 	 * END POINT GET BY ID 
 	 * /tags/:id
 	 */
-	@GetMapping("/{id}")
+	@GetMapping(value="/{id}", produces = AppHelper.JSON)
 	public ResponseEntity<Tag> show (@PathVariable Integer id) {
 		return ResponseEntity
 				.status(HttpStatus.FOUND)
@@ -54,7 +53,7 @@ public class TagController {
 	 * END POINT POST NEW USER'S TAG
 	 * /tags
 	 */
-	@PostMapping
+	@PostMapping(produces = AppHelper.JSON)
 	public ResponseEntity<Tag> save (@Valid @RequestBody Tag tag, Principal auth)
 	{
 		Tag _tag = this.serviceTag.save(tag, auth.getName());
@@ -67,7 +66,7 @@ public class TagController {
 	 * END POINT UPDATE USER'S TAG
 	 * /tags/:id
 	 */
-	@RequestMapping(value="/{id}", method = {RequestMethod.PATCH, RequestMethod.PUT}, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{id}", method = {RequestMethod.PATCH, RequestMethod.PUT}, produces = AppHelper.JSON)
 	public ResponseEntity<Tag> update (@Valid @RequestBody Tag tag, @PathVariable int id)
 	{
 		Tag _tag = this.serviceTag.update(tag, id);
@@ -79,7 +78,7 @@ public class TagController {
 	 * END POINT DELETE TAG
 	 * /tags/:id
 	 */
-	@RequestMapping(value="/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{id}", method = RequestMethod.DELETE, produces = AppHelper.JSON)
 	public ResponseEntity<?> destroy (@PathVariable int id)
 	{
 		this.serviceTag.delete(id);

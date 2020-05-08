@@ -1,11 +1,14 @@
 
 package ec.com.jnegocios.api.auth;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ec.com.jnegocios.entity.AccountToken;
 import ec.com.jnegocios.entity.UserAccount;
+import ec.com.jnegocios.exception.ConflictException;
 import ec.com.jnegocios.exception.global.auth.AccountServiceException;
 import ec.com.jnegocios.repository.UserRepository;
 import ec.com.jnegocios.service.auth.AccountControllerService;
@@ -39,7 +43,11 @@ public class AccountController {
 
 		accountService.validateAccountData(userAccount);
 		
+		userAccount.setName(userAccount.getName().toLowerCase());
+		userAccount.setLastname(userAccount.getLastname().toLowerCase());
+		userAccount.setUsername(userAccount.getUsername().toLowerCase());
 		userAccount.setUpdatedAt( LocalDateTime.now() );
+		userAccount.setEmail(userAccount.getEmail().toLowerCase());
 		userAccount = userAccountRepository.save(userAccount);
 
 		if(userAccount == null) { 
@@ -52,15 +60,47 @@ public class AccountController {
 
 	}
 	
-	@PutMapping("/account")
-	public void updateAccount( @RequestBody UserAccount userAccount ) {
+	@GetMapping(value="/profile", produces = AppHelper.JSON)
+	public ResponseEntity<?> showAccount( Principal auth ) {
+		UserAccount user = this.userAccountRepository.findByUsernameOnly(auth.getName().toLowerCase());
 		
-		// To do..
+		return ResponseEntity
+				.status(HttpStatus.FOUND)
+				.body(user);
+	}
+	
+	@PutMapping(value="/profile", produces = AppHelper.JSON)
+	public ResponseEntity<?> updateAccount( @Valid @RequestBody UserAccount userAccount, Principal auth ) {
+		UserAccount user = this.userAccountRepository.findByUsernameOnly(auth.getName().toLowerCase());
 		
+		UserAccount _user = this.userAccountRepository.findByUsername(userAccount.getUsername().toLowerCase(), user.getId());
+		
+		if(_user != null)
+			throw new ConflictException("El usuario '"+userAccount.getUsername()+"' ya esta en uso.");
+		
+		if(!userAccount.getName().toLowerCase().equals(user.getName().toLowerCase()))
+			user.setName(userAccount.getName().toLowerCase());
+		
+		if(!userAccount.getLastname().toLowerCase().equals(user.getLastname().toLowerCase()))
+			user.setLastname(userAccount.getLastname().toLowerCase());	
+			
+		if(!userAccount.getUsername().toLowerCase().equals(user.getUsername().toLowerCase()))
+		{
+			user.setUsername(userAccount.getUsername().toLowerCase());
+			
+			// SE DEBE SOLICITAR NUEVA AUTENTICACIÓN DEL USUARIO AL CAMBIAR SU USERNAME
+		}
+				
+		user.setDarkmode(userAccount.isDarkmode());
+		user.setPassword(userAccount.getPassword());
+		this.userAccountRepository.save(user);
+		
+		return ResponseEntity
+				.ok("{\"message\": \"Tus datos se han actualizado.\"}");
 	}
 	
 	@DeleteMapping("/account")
-	public UserAccount deleteteAccount( @RequestBody UserAccount userAccount ) {
+	public UserAccount deleteAccount( @RequestBody UserAccount userAccount ) {
 
 		userAccount = userAccountRepository.findByEmail(userAccount.getEmail());
 		

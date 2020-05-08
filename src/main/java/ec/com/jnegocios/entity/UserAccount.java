@@ -38,6 +38,7 @@ public class UserAccount implements Serializable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private int id;
 	
 	@Size(min = 3, max = 155, message = "El nombre debe ser mayor a 3 y menor a 155 caracteres.")
@@ -125,6 +126,7 @@ public class UserAccount implements Serializable {
 		this.updatedAt = updatedAt;
 	}
 
+	
 	public UserAccount() {
 	
 		this.roles = new ArrayList<Role>();

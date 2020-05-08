@@ -58,7 +58,7 @@ public class NoteController {
 	 * 
 	 * **************************************/
 	
-	@GetMapping(value = AppHelper.PREFIX_NOTE + "/pg")
+	@GetMapping(value = AppHelper.PREFIX_NOTE + "/pg", produces = AppHelper.JSON)
 	public ResponseEntity<Page<Note>> getNotesPaginatedByUserAuth (
 			@RequestParam(required = false, defaultValue = "0") int page, 
 			@RequestParam(required = false, defaultValue = "3") int size, Principal auth)
@@ -70,7 +70,7 @@ public class NoteController {
 		return new ResponseEntity<Page<Note>>(notes, HttpStatus.OK);
 	}
 	
-	@GetMapping(value = AppHelper.PREFIX_NOTE)
+	@GetMapping(value = AppHelper.PREFIX_NOTE, produces = AppHelper.JSON)
 	public ResponseEntity<Collection<Note>> getNotesByUserAuth (Principal auth)
 	{
 		Collection<Note> notes = this.serviceNote
@@ -79,7 +79,7 @@ public class NoteController {
 		return new ResponseEntity<Collection<Note>>(notes, HttpStatus.OK);
 	}
 	
-	@GetMapping(value = AppHelper.PREFIX_NOTE + "/{id}")
+	@GetMapping(value = AppHelper.PREFIX_NOTE + "/{id}", produces = AppHelper.JSON)
 	public ResponseEntity<Note> getNoteByById (@PathVariable Integer id)
 	{
 		return ResponseEntity
@@ -87,7 +87,7 @@ public class NoteController {
 				.body(this.serviceNote.findById(id));
 	}
 	
-	@PostMapping(AppHelper.PREFIX_NOTE)
+	@PostMapping(value=AppHelper.PREFIX_NOTE, produces = AppHelper.JSON)
 	public ResponseEntity<Note> save (@RequestBody Note note, Principal auth)
 	{
 		return ResponseEntity
@@ -95,7 +95,7 @@ public class NoteController {
 				.body(this.serviceNote.save(note, auth.getName()));
 	}
 			
-	@DeleteMapping(AppHelper.PREFIX_NOTE + "/{id}")
+	@DeleteMapping(value=AppHelper.PREFIX_NOTE + "/{id}", produces = AppHelper.JSON)
 	public ResponseEntity<?> destroy (@PathVariable Integer id)
 	{
 		this.serviceNote.delete(id);

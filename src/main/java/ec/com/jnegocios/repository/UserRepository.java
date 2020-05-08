@@ -14,7 +14,13 @@ public interface UserRepository extends JpaRepository<UserAccount, Integer>{
 	
 	UserAccount findByEmail(String email);
 	
+	@Query("SELECT new UserAccount(u.id, u.name, u.lastname, u.username, u.email, u.password, u.photo, u.storageUrl, u.enabled, u.darkmode, u.token_exp, u.createdAt, u.updatedAt) FROM UserAccount u WHERE u.username = ?1")
+	UserAccount findByUsernameOnly(String username);
+	
 	UserAccount findByUsername(String username);
+	
+	@Query("SELECT new UserAccount(u.id, u.name, u.lastname, u.username, u.email, u.password, u.photo, u.storageUrl, u.enabled, u.darkmode, u.token_exp, u.createdAt, u.updatedAt) FROM UserAccount u WHERE u.username = ?1 AND u.id <> ?2")
+	UserAccount findByUsername(String username, Integer id);
 	
 	Collection<UserAccount> findByEnabledTrue();
 	
