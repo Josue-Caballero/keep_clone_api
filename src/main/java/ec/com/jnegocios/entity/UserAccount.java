@@ -155,7 +155,7 @@ public class UserAccount implements Serializable {
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.name = name.toLowerCase();
 	}
 
 	public String getLastname() {
@@ -163,7 +163,7 @@ public class UserAccount implements Serializable {
 	}
 
 	public void setLastname(String lastname) {
-		this.lastname = lastname;
+		this.lastname = lastname.toLowerCase();
 	}
 
 	public String getUsername() {
@@ -171,7 +171,7 @@ public class UserAccount implements Serializable {
 	}
 
 	public void setUsername(String username) {
-		this.username = username;
+		this.username = username.toLowerCase();
 	}
 
 	public String getEmail() {
@@ -179,7 +179,7 @@ public class UserAccount implements Serializable {
 	}
 
 	public void setEmail(String email) {
-		this.email = email;
+		this.email = email.toLowerCase();
 	}
 
 	public String getPassword() {
