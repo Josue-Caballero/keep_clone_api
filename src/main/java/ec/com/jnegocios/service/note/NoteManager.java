@@ -83,8 +83,14 @@ public class NoteManager implements NoteService {
 	
 	@Transactional(readOnly = true)
 	@Override
-	public Collection<Note> findByUsernameSince(String username, Integer since) {
-		return this.repoNote.findTop15ByUser_UsernameAndIdGreaterThanOrderByIdAsc(username, since);
+	public Collection<Note> findByNotFiledUsernameSince(String username, Integer since) {
+		return this.repoNote.findTop10ByFiledFalseAndUser_UsernameAndIdGreaterThanOrderByIdAsc(username, since);
+	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public Collection<Note> findByFiledAndUsernameSince(String username, Integer since) {
+		return this.repoNote.findTop10ByFiledTrueAndUser_UsernameAndIdGreaterThanOrderByIdAsc(username, since);
 	}
 	
 	@Transactional(readOnly = true)

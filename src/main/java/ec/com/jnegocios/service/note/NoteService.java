@@ -70,7 +70,14 @@ public interface NoteService {
 	 * @return collection Notes
 	 * @param username, since
 	 */ 
-	Collection<Note> findByUsernameSince (String username, Integer since);
+	Collection<Note> findByNotFiledUsernameSince (String username, Integer since);
+	
+	/**
+	 * Get collection notes filed for user and since
+	 * @return collection Notes
+	 * @param username, since
+	 */ 
+	Collection<Note> findByFiledAndUsernameSince (String username, Integer since);
 	
 	/**
 	 * Get collection paginated Notes for user

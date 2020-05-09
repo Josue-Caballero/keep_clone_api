@@ -61,18 +61,23 @@ public class NoteController {
 	
 	@GetMapping(produces = AppHelper.JSON)
 	public ResponseEntity<Collection<Note>> getNotesSinceByUserAuth (
-		@RequestParam(required = false, defaultValue = "0") int since) {
+		@RequestParam(required = false, defaultValue = "0") int since,
+		@RequestParam(required = false, defaultValue = "false") Boolean filed) {
 		
 		Authentication authUser = SecurityContextHolder
 			.getContext().getAuthentication();
 		
 		Collection<Note> notes = this.serviceNote
-			.findByUsernameSince(authUser.getName(), since);
+				.findByNotFiledUsernameSince(authUser.getName(), since);
+		
+		if(filed)
+			notes = this.serviceNote
+				.findByFiledAndUsernameSince(authUser.getName(), since);
 		
 		return ResponseEntity
 				.ok(notes);
 	}
-	
+		
 	@GetMapping(value = "/{id}", produces = AppHelper.JSON)
 	public ResponseEntity<Note> getNoteByById (@PathVariable Integer id)
 	{
