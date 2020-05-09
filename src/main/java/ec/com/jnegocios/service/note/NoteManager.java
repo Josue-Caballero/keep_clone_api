@@ -54,15 +54,19 @@ public class NoteManager implements NoteService {
 		if(user == null)
 			throw new NotFoundException("No se ha encontrado el usuario '"+ username+ "'");
 		
-		note.setUser(user);
+		note.setUser(user);		
 		return this.repoNote.save(note);
 	}
 
 	@Transactional
 	@Override
 	public Note update(Note note, Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		Note _note = this.repoNote.findById(id)
+				.orElseThrow(() -> new NotFoundException("No hemos encontrado una nota con un identificador válido."));
+		
+		note.setId(id);
+		note.setUser(_note.getUser());
+		return this.repoNote.save(note);
 	}
 
 	@Transactional(readOnly = true)
@@ -76,7 +80,13 @@ public class NoteManager implements NoteService {
 	public Collection<Note> findByUsername(String username) {
 		return this.repoNote.findByUser_Username(username);
 	}
-
+	
+	@Transactional(readOnly = true)
+	@Override
+	public Collection<Note> findByUsernameSince(String username, Integer since) {
+		return this.repoNote.findTop15ByUser_UsernameAndIdGreaterThanOrderByIdAsc(username, since);
+	}
+	
 	@Transactional(readOnly = true)
 	@Override
 	public Page<Note> findByUsername(String username, Pageable pageable) {

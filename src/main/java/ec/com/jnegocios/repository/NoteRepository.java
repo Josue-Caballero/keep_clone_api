@@ -23,4 +23,6 @@ public interface NoteRepository extends JpaRepository<Note, Integer>{
 	Collection<Note> findByUser_Username(String username);
 	
 	Page<Note> findByUser_Username(String username, Pageable pageable);
+	
+	Collection<Note> findTop15ByUser_UsernameAndIdGreaterThanOrderByIdAsc(String username, Integer id);
 }

@@ -17,6 +17,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -51,6 +52,7 @@ public class UserAccount implements Serializable {
 	
 	@Size(min = 3, max = 16, message = "El nombre de usuario debe ser mayor a 3 y menor a 16 caracteres.")
 	@NotEmpty(message = "El nombre de usuario es obligatorio.")
+	@Pattern(regexp = "[a-z0-9]+", message="El nombre de usuario debe contener letras o letras con números")
 	private String username;
 	
 	@Email(message = "El correo no es válido.")

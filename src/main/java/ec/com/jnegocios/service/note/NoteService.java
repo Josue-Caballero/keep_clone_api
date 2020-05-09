@@ -66,6 +66,13 @@ public interface NoteService {
 	Collection<Note> findByUsername (String username);
 		
 	/**
+	 * Get collection Notes for user and since
+	 * @return collection Notes
+	 * @param username, since
+	 */ 
+	Collection<Note> findByUsernameSince (String username, Integer since);
+	
+	/**
 	 * Get collection paginated Notes for user
 	 * @return collection Notes for page
 	 * @param username, pageable

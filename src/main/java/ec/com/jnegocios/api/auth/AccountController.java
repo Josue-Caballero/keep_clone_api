@@ -37,7 +37,7 @@ public class AccountController {
 	@Autowired
 	private UserRepository userAccountRepository;
 
-	@PostMapping("/account")
+	@PostMapping(value = "/account", produces = AppHelper.JSON)
 	public UserAccount createAccount( 
 		@Valid @RequestBody UserAccount userAccount ) {
 

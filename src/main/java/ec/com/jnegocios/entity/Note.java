@@ -33,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
 @Table(name = "notes")
-@JsonInclude(Include.NON_NULL)
+@JsonInclude(Include.NON_EMPTY)
 public class Note implements Serializable {
 
 	private static final long serialVersionUID = 9130312238738098274L;
@@ -93,6 +93,7 @@ public class Note implements Serializable {
 	}
 	
 	public Note() {
+		this.color = "#FFFFFF";
 		this.images = new HashSet<Image>();
 		this.tags = new HashSet<Tag>();
 	}
@@ -126,7 +127,9 @@ public class Note implements Serializable {
 	}
 
 	public void setColor(String color) {
-		this.color = color;
+		this.color = (color.isEmpty() || color.equals(null)) 
+				? "#FFFFFF" 
+				: color;
 	}
 
 	public boolean isFiled() {
