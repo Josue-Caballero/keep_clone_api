@@ -78,7 +78,11 @@ public class Note implements Serializable {
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime updatedAt;
 
-	
+	@Column(name = "deleted_at")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private LocalDateTime deletedAt;
+
 	public Note(int id, String title, String description, String color, boolean filed, UserAccount user,
 			LocalDateTime createdAt, LocalDateTime updatedAt) {
 		super();
@@ -164,6 +168,14 @@ public class Note implements Serializable {
 		this.updatedAt = updatedAt;
 	}
 	
+	public LocalDateTime getDeletedAt() {
+		return deletedAt;
+	}
+
+	public void setDeletedAt(LocalDateTime deletedAt) {
+		this.deletedAt = deletedAt;
+	}
+
 	public Collection<Image> getImages() {
 		return images;
 	}
@@ -231,11 +243,12 @@ public class Note implements Serializable {
 	{
 		this.updatedAt = LocalDateTime.now();
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Note [id=" + id + ", title=" + title + ", description=" + description + ", color=" + color + ", filed="
-				+ filed + ", user=" + user + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+				+ filed + ", user=" + user + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", deletedAt="
+				+ deletedAt + "]";
 	}
 
 }

@@ -22,9 +22,14 @@ public interface NoteRepository extends JpaRepository<Note, Integer>{
 	
 	Collection<Note> findByUser_Username(String username);
 	
-	Page<Note> findByUser_Username(String username, Pageable pageable);
+	Page<Note> findByUser_UsernameAndDeletedAtIsNull(String username, Pageable pageable);
 	
-	Collection<Note> findTop10ByFiledFalseAndUser_UsernameAndIdGreaterThanOrderByIdAsc(String username, Integer id);
+	Collection<Note> findTop10ByFiledFalseAndDeletedAtIsNullAndUser_UsernameAndIdGreaterThanOrderByIdAsc(String username, Integer id);
 	
-	Collection<Note> findTop10ByFiledTrueAndUser_UsernameAndIdGreaterThanOrderByIdAsc(String username, Integer id);
+	Collection<Note> findTop10ByFiledTrueAndDeletedAtIsNullAndUser_UsernameAndIdGreaterThanOrderByIdAsc(String username, Integer id);
+	
+	Collection<Note> findTop10ByDeletedAtIsNotNullAndUser_UsernameAndIdGreaterThanOrderByIdAsc(String username, Integer id);
+	
+	
+	Collection<Note> findTop10ByDeletedAtIsNullAndUser_UsernameAndIdGreaterThanOrderByIdAsc(String username, Integer id);
 }

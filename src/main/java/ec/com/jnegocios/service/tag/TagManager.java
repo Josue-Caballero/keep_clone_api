@@ -5,12 +5,15 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ec.com.jnegocios.entity.Tag;
 import ec.com.jnegocios.entity.UserAccount;
 import ec.com.jnegocios.exception.ConflictException;
+import ec.com.jnegocios.exception.ForbiddenException;
 import ec.com.jnegocios.exception.NotFoundException;
 import ec.com.jnegocios.repository.TagRepository;
 import ec.com.jnegocios.repository.UserRepository;
@@ -39,8 +42,16 @@ public class TagManager implements TagService {
 	@Transactional(readOnly = true)
 	@Override
 	public Tag findById (Integer id) {
-		return repoTag.findById(id)
+		Tag tag = repoTag.findById(id)
 				.orElseThrow(() -> new NotFoundException("No se ha encontrado la etiqueta con id " + id));
+		
+		Authentication authUser = SecurityContextHolder
+				.getContext().getAuthentication();
+		
+		if(!tag.getUser().getUsername().equals(authUser.getName()))
+			throw new ForbiddenException("No puedes acceder a este recurso.");
+		
+		return tag;
 	}
 
 	@Transactional
@@ -63,7 +74,12 @@ public class TagManager implements TagService {
 		
 		tag.setUser(user);
 		tag.setName(nameTag);
-		return this.repoTag.save(tag);
+		Tag saveTag = this.repoTag.save(tag);
+		
+		if(saveTag == null)
+			throw new ConflictException("No se ha podido crear el tag, por favor intente de nuevo.");		
+		
+		return saveTag;
 	}
 
 	@Transactional

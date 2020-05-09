@@ -80,6 +80,13 @@ public interface NoteService {
 	Collection<Note> findByFiledAndUsernameSince (String username, Integer since);
 	
 	/**
+	 * Get collection notes in trash for user and since
+	 * @return collection Notes in trash
+	 * @param username, since
+	 */ 
+	Collection<Note> findByUsernameSinceInTrash (String username, Integer since);
+	
+	/**
 	 * Get collection paginated Notes for user
 	 * @return collection Notes for page
 	 * @param username, pageable
@@ -107,4 +114,12 @@ public interface NoteService {
 	 * @param note_id
 	 */ 
 	void delete(Integer id);
+	
+	/**
+	 * Soft delete Note by id
+	 * @return void
+	 * @throws NotFoundException
+	 * @param note_id
+	 */ 
+	void softDelete(Integer id);
 }

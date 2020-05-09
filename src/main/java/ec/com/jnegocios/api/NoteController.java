@@ -44,10 +44,14 @@ public class NoteController {
 	@Autowired
 	private ImageRepository repoImage;
 	
+	/**
+	 * Get notes paginated
+	 * 
+	 */
 	@GetMapping(value = "/pg", produces = AppHelper.JSON)
 	public ResponseEntity<Page<Note>> getNotesPaginatedByUserAuth (
 		@RequestParam(required = false, defaultValue = "0") int page, 
-		@RequestParam(required = false, defaultValue = "3") int size) {
+		@RequestParam(required = false, defaultValue = "7") int size) {
 		
 		Authentication authUser = SecurityContextHolder
 			.getContext().getAuthentication();
@@ -59,6 +63,10 @@ public class NoteController {
 		return new ResponseEntity<Page<Note>>(notes, HttpStatus.OK);
 	}
 	
+	/**
+	 * Get notes filed and not filed
+	 * 
+	 */
 	@GetMapping(produces = AppHelper.JSON)
 	public ResponseEntity<Collection<Note>> getNotesSinceByUserAuth (
 		@RequestParam(required = false, defaultValue = "0") int since,
@@ -77,7 +85,29 @@ public class NoteController {
 		return ResponseEntity
 				.ok(notes);
 	}
+	
+	/**
+	 * Get notes in trash
+	 * 
+	 */
+	@GetMapping(value="/trash", produces = AppHelper.JSON)
+	public ResponseEntity<Collection<Note>> getNotesSinceByUserAuthInTrash (
+		@RequestParam(required = false, defaultValue = "0") int since) {
 		
+		Authentication authUser = SecurityContextHolder
+			.getContext().getAuthentication();
+		
+		Collection<Note> notes = this.serviceNote
+				.findByUsernameSinceInTrash(authUser.getName(), since);
+		
+		return ResponseEntity
+				.ok(notes);
+	}
+		
+	/**
+	 * Get note by Id
+	 * 
+	 */
 	@GetMapping(value = "/{id}", produces = AppHelper.JSON)
 	public ResponseEntity<Note> getNoteByById (@PathVariable Integer id)
 	{
@@ -106,20 +136,35 @@ public class NoteController {
 	
 	}
 	
+	/**
+	 * Delete One note by note id
+	 * 
+	 */
 	@DeleteMapping(value = "/{id}", produces = AppHelper.JSON)
-	public ResponseEntity<?> destroy (@PathVariable Integer id)
+	public ResponseEntity<?> destroy (@RequestParam(required = false, defaultValue = "true") Boolean soft, @PathVariable Integer id)
 	{	
-		Note note = this.serviceNote.findById(id);
-		for (Image img : note.getImages()) 
-		{
-			this.uploadService.deleteFile(img.getNameImage());
+		if(!soft) {
+			Note note = this.serviceNote.findById(id);
+			if(note.getImages().size() > 0)
+			{
+				for (Image img : note.getImages()) {
+					this.uploadService.deleteFile(img.getNameImage());
+				}
+			}		
+			
+			this.serviceNote.delete(id);
+		} else {
+			this.serviceNote.softDelete(id);
 		}
-		this.serviceNote.delete(id);
-		
+				
 		return ResponseEntity
 			.ok("{\"message\":\"Nota borrada.\"}");
 	}
 	
+	/**
+	 * Delete One note's image by image id 
+	 * 
+	 */
 	@DeleteMapping(value = "/image/{id}", produces = AppHelper.JSON)
 	public ResponseEntity<?> destroyImage (@PathVariable Integer id)
 	{	

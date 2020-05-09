@@ -1,16 +1,20 @@
 package ec.com.jnegocios.service.note;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ec.com.jnegocios.entity.Note;
 import ec.com.jnegocios.entity.UserAccount;
 import ec.com.jnegocios.exception.ConflictException;
+import ec.com.jnegocios.exception.ForbiddenException;
 import ec.com.jnegocios.exception.NotFoundException;
 import ec.com.jnegocios.repository.NoteRepository;
 import ec.com.jnegocios.repository.UserRepository;
@@ -39,8 +43,16 @@ public class NoteManager implements NoteService {
 	@Transactional(readOnly = true)
 	@Override
 	public Note findById(Integer id) {
-		return this.repoNote.findById(id)
+		Note note = this.repoNote.findById(id)
 				.orElseThrow(() -> new NotFoundException("No se ha encontrado una nota con Id " + id));
+		
+		Authentication authUser = SecurityContextHolder
+				.getContext().getAuthentication();
+		
+		if(!note.getUser().getUsername().equals(authUser.getName()))
+			throw new ForbiddenException("No puedes acceder a este recurso.");
+		
+		return note;
 	}
 
 	@Transactional
@@ -55,7 +67,12 @@ public class NoteManager implements NoteService {
 			throw new NotFoundException("No se ha encontrado el usuario '"+ username+ "'");
 		
 		note.setUser(user);		
-		return this.repoNote.save(note);
+		Note saveNote = this.repoNote.save(note);
+		
+		if(saveNote == null)
+			throw new ConflictException("No se ha podido crear la nota, por favor intente luego.");
+		
+		return saveNote;
 	}
 
 	@Transactional
@@ -66,7 +83,13 @@ public class NoteManager implements NoteService {
 		
 		note.setId(id);
 		note.setUser(_note.getUser());
-		return this.repoNote.save(note);
+		note.setDeletedAt(null);
+		Note updateNote = this.repoNote.save(note);
+		
+		if(updateNote == null)
+			throw new ConflictException("No se ha podido actualizar la nota, por favor intente luego.");
+		
+		return updateNote;
 	}
 
 	@Transactional(readOnly = true)
@@ -84,19 +107,19 @@ public class NoteManager implements NoteService {
 	@Transactional(readOnly = true)
 	@Override
 	public Collection<Note> findByNotFiledUsernameSince(String username, Integer since) {
-		return this.repoNote.findTop10ByFiledFalseAndUser_UsernameAndIdGreaterThanOrderByIdAsc(username, since);
+		return this.repoNote.findTop10ByFiledFalseAndDeletedAtIsNullAndUser_UsernameAndIdGreaterThanOrderByIdAsc(username, since);
 	}
 	
 	@Transactional(readOnly = true)
 	@Override
 	public Collection<Note> findByFiledAndUsernameSince(String username, Integer since) {
-		return this.repoNote.findTop10ByFiledTrueAndUser_UsernameAndIdGreaterThanOrderByIdAsc(username, since);
+		return this.repoNote.findTop10ByFiledTrueAndDeletedAtIsNullAndUser_UsernameAndIdGreaterThanOrderByIdAsc(username, since);
 	}
 	
 	@Transactional(readOnly = true)
 	@Override
 	public Page<Note> findByUsername(String username, Pageable pageable) {
-		return this.repoNote.findByUser_Username(username, pageable);
+		return this.repoNote.findByUser_UsernameAndDeletedAtIsNull(username, pageable);
 	}
 	
 	@Transactional(readOnly = true)
@@ -111,11 +134,29 @@ public class NoteManager implements NoteService {
 		return this.repoNote.findByFiledFalseAndUser_Username(username);
 	}
 
+	@Transactional(readOnly = true)
+	@Override
+	public Collection<Note> findByUsernameSinceInTrash(String username, Integer since) {
+		return this.repoNote.findTop10ByDeletedAtIsNotNullAndUser_UsernameAndIdGreaterThanOrderByIdAsc(username, since);
+	}
+	
 	@Transactional
 	@Override
 	public void delete(Integer id) {
 		this.repoNote.findById(id)
 			.map(note -> { repoNote.deleteById(note.getId()); return note; })
+			.orElseThrow(() -> new NotFoundException("No se ha encontrado una nota con Id " + id));
+	}
+
+	@Transactional
+	@Override
+	public void softDelete(Integer id) {
+		this.repoNote.findById(id)
+			.map(note -> { 
+				note.setDeletedAt(LocalDateTime.now());
+				repoNote.save(note); 
+				return note; 
+			})
 			.orElseThrow(() -> new NotFoundException("No se ha encontrado una nota con Id " + id));
 	}
 
