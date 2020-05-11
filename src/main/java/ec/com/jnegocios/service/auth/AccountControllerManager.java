@@ -8,16 +8,21 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import ec.com.jnegocios.entity.AccountToken;
+import ec.com.jnegocios.entity.Image;
 import ec.com.jnegocios.entity.Role;
 import ec.com.jnegocios.entity.UserAccount;
+import ec.com.jnegocios.exception.ConflictException;
 import ec.com.jnegocios.exception.global.auth.AccountServiceException;
 import ec.com.jnegocios.repository.AccountTokenRepository;
+import ec.com.jnegocios.repository.ImageRepository;
 import ec.com.jnegocios.repository.RoleRepository;
 import ec.com.jnegocios.repository.UserRepository;
 import ec.com.jnegocios.service.mail.MailSenderService;
+import ec.com.jnegocios.service.upload.UploadFileControllerService;
 import ec.com.jnegocios.util.IdentifierGenerator;
 import ec.com.jnegocios.util.enums.EnumToken;
 
@@ -47,6 +52,12 @@ public class AccountControllerManager implements AccountControllerService {
 	@Autowired
 	private RoleRepository roleRepository;
 		
+	@Autowired
+	private UploadFileControllerService uploadService;
+	
+	@Autowired
+	private ImageRepository repoImage;
+	
 	public AccountControllerManager validateAccountData(
 		UserAccount userAccount) throws AccountServiceException {
 		
@@ -178,9 +189,9 @@ public class AccountControllerManager implements AccountControllerService {
 				break;
 			
 			case UNSUBSCRIBE:
-			
-				userAccountRepository.deleteById( regToken.getUser().getId() );
 				
+				this.deleteAccount(regToken.getUser().getId());
+					
 				break;
 		
 			default:
@@ -191,7 +202,26 @@ public class AccountControllerManager implements AccountControllerService {
 		return true;
 
 	}
-
+	
+	@Async
+	private void deleteAccount (Integer id)
+	{
+		userAccountRepository.findById(id)
+		.map(account -> {
+			account.getNotes().forEach(note -> {
+				for (Image image : note.getImages()) {
+					this.uploadService.deleteFile(image.getNameImage());
+				}
+			});
+			
+			if(this.uploadService.deleteFile( account.getPhoto() ))
+				userAccountRepository.deleteById( account.getId() );
+			
+			return account;
+		})
+		.orElseThrow(() -> new ConflictException("Your account don't exists"));
+	}
+	
 	private void validateRegistrationToken(UserAccount account) {
 		
 		Role role = null;

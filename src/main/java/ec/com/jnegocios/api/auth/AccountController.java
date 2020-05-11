@@ -127,7 +127,7 @@ public class AccountController {
 	}
 
 	// Get only for fast test, change to PostMapping
-	@GetMapping(value="/verify-account", produces = AppHelper.JSON)
+	@GetMapping(value="/verify-account")
 	public String verifyAccount( @RequestParam("token") String token ) {
 
 		if( accountService.validateToken(token) ) { 
@@ -138,7 +138,7 @@ public class AccountController {
 	}
 
 	// Get only for fast test, change to PostMapping
-	@GetMapping(value="/verify-unsubscribe", produces = AppHelper.JSON)
+	@GetMapping(value="/verify-unsubscribe")
 	public String verifyUnsubscribe( @RequestParam("token") String token ) {
 
 		if( accountService.validateToken(token) ) { 
@@ -148,7 +148,7 @@ public class AccountController {
 
 	}
 	
-	@PostMapping(value="/resend-verification", produces = AppHelper.JSON)
+	@PostMapping(value="/resend-verification")
 	public String resendVerifyAccount( @RequestBody UserAccount userAccount ) {
 
 		userAccount = userAccountRepository.findByEmail(userAccount.getEmail());
@@ -164,7 +164,7 @@ public class AccountController {
 
 	}
 
-	@PostMapping(value="/resend-unsubscribe", produces = AppHelper.JSON)
+	@PostMapping(value="/resend-unsubscribe")
 	public String resendUnsubscribeAccount() {
 
 		UserAccount userAccount;

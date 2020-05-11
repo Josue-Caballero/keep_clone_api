@@ -79,7 +79,7 @@ public class NoteManager implements NoteService {
 	@Override
 	public Note update(Note note, Integer id) {
 		Note _note = this.repoNote.findById(id)
-				.orElseThrow(() -> new NotFoundException("No hemos encontrado una nota con un identificador válido."));
+			.orElseThrow(() -> new NotFoundException("No hemos encontrado una nota con un identificador válido."));
 		
 		note.setId(id);
 		note.setUser(_note.getUser());
