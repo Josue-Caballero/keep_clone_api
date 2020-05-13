@@ -77,6 +77,8 @@ public class AccountController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		UserAccount user = this.userAccountRepository.findByUsernameOnly(auth.getName().toLowerCase());
 		
+		if( user == null ) { 
+			throw new AccountServiceException("The username it's not found"); }
 		UserAccount _user = this.userAccountRepository.findByUsername(userAccount.getUsername().toLowerCase(), user.getId());
 		JSONResponse jsonResponse = JSONResponse.fromGeneralTemplate(
 			AppHelper.PREFIX_ACC + "/profile", "Tus datos se han actualizado.", 200);

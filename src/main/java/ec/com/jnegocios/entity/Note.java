@@ -3,7 +3,6 @@ package ec.com.jnegocios.entity;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -48,7 +47,7 @@ public class Note implements Serializable {
 	
 	private String color;
 	
-	private boolean filed;
+	private Boolean filed;
 	
 	@JsonProperty(access = Access.READ_ONLY)
 	@ManyToOne
@@ -97,9 +96,7 @@ public class Note implements Serializable {
 	}
 	
 	public Note() {
-		this.color = "#FFFFFF";
-		this.images = new HashSet<Image>();
-		this.tags = new HashSet<Tag>();
+
 	}
 
 	public int getId() {
@@ -136,11 +133,11 @@ public class Note implements Serializable {
 				: color;
 	}
 
-	public boolean isFiled() {
+	public Boolean isFiled() {
 		return filed;
 	}
 
-	public void setFiled(boolean filed) {
+	public void setFiled(Boolean filed) {
 		this.filed = filed;
 	}
 

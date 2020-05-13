@@ -2,6 +2,7 @@ package ec.com.jnegocios.service.note;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -44,10 +45,10 @@ public class NoteManager implements NoteService {
 	@Override
 	public Note findById(Integer id) {
 		Note note = this.repoNote.findById(id)
-				.orElseThrow(() -> new NotFoundException("No se ha encontrado una nota con Id " + id));
+			.orElseThrow(() -> new NotFoundException("No se ha encontrado una nota con Id " + id));
 		
 		Authentication authUser = SecurityContextHolder
-				.getContext().getAuthentication();
+			.getContext().getAuthentication();
 		
 		if(!note.getUser().getUsername().equals(authUser.getName()))
 			throw new ForbiddenException("No puedes acceder a este recurso.");
@@ -80,11 +81,31 @@ public class NoteManager implements NoteService {
 	public Note update(Note note, Integer id) {
 		Note _note = this.repoNote.findById(id)
 			.orElseThrow(() -> new NotFoundException("No hemos encontrado una nota con un identificador válido."));
+
+		String 
+			title = note.getTitle(),
+			description = note.getDescription(),
+			color = note.getColor();
+		Boolean filed = note.isFiled();
+
+		if ( title != null ) {
+			_note.setTitle(title); }
+
+		if ( description != null ) {
+			_note.setDescription( description ); }
 		
-		note.setId(id);
-		note.setUser(_note.getUser());
-		note.setDeletedAt(null);
-		Note updateNote = this.repoNote.save(note);
+		if ( filed != null ) {
+			_note.setFiled( filed ); }
+		
+		if ( color != null ) {
+			_note.setColor( color ); }
+		
+		if ( note.getTags() != null ) {
+			_note.setTags( new HashSet<>(note.getTags()) ); }
+
+		_note.setDeletedAt(null);
+
+		Note updateNote = this.repoNote.save(_note);
 		
 		if(updateNote == null)
 			throw new ConflictException("No se ha podido actualizar la nota, por favor intente luego.");
