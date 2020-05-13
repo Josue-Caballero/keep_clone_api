@@ -25,6 +25,7 @@ import ec.com.jnegocios.exception.ErrorResponse;
 import ec.com.jnegocios.exception.global.auth.AccountServiceException;
 import ec.com.jnegocios.service.jwt.JWTService;
 import ec.com.jnegocios.util.AppHelper;
+import ec.com.jnegocios.util.JSONResponse;
 
 public class JWTAuthenticationFilter 
 	extends UsernamePasswordAuthenticationFilter {
@@ -88,17 +89,20 @@ public class JWTAuthenticationFilter
 	protected void successfulAuthentication(HttpServletRequest req, 
 		HttpServletResponse res, FilterChain chain, Authentication authResult) 
 		throws IOException, ServletException {
-		
-		Map<String, String> body = new HashMap<>();
-		body.put("message", "Successful authentication, you have a new token");
-		
+
+		JSONResponse jsonResponse = JSONResponse.fromGeneralTemplate(
+			req.getRequestURI(), 
+			"Successful authentication, you have a new token", 
+			200
+		);
 
 		res.addHeader(
 			"Authorization", 
-			"Bearer " + jwtManager.generateAuthToken(
-				(User) authResult.getPrincipal())
+			"Bearer " + jwtManager.generateAuthToken((User) authResult.getPrincipal())
 		);
-		res.getWriter().write( new ObjectMapper().writeValueAsString(body) );
+		
+		res.getWriter().write( 
+			new ObjectMapper().writeValueAsString(jsonResponse.getBody()) );
 		res.setStatus(200);
 		res.setContentType("application/json");
 	

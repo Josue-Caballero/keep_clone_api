@@ -159,7 +159,7 @@ public class AccountControllerManager implements AccountControllerService {
 
 	public boolean validateToken(String token) {
 		
-		Date currentTime = new Date();
+		Long currentTime = (new Date()).getTime();
 		AccountToken regToken = regTokenRepository.findByToken(token);
 		
 		if( regToken == null ) {
@@ -167,7 +167,7 @@ public class AccountControllerManager implements AccountControllerService {
 				AccountServiceException("The token sended does not exist"); }
 		
 		else if( regToken.isValidate() 
-			|| ( (regToken.getExpiration() - currentTime.getTime()) <= 0 ) ) {
+			|| ( (regToken.getExpiration() - currentTime) <= 0 ) ) {
 				return false; }
 
 		switch ( regToken.getTypetoken() ) {

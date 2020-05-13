@@ -21,10 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 import ec.com.jnegocios.entity.AccountToken;
 import ec.com.jnegocios.entity.UserAccount;
 import ec.com.jnegocios.exception.ConflictException;
+import ec.com.jnegocios.exception.ErrorResponse;
 import ec.com.jnegocios.exception.global.auth.AccountServiceException;
 import ec.com.jnegocios.repository.UserRepository;
 import ec.com.jnegocios.service.auth.AccountControllerService;
 import ec.com.jnegocios.util.AppHelper;
+import ec.com.jnegocios.util.JSONResponse;
 import ec.com.jnegocios.util.enums.EnumToken;
 
 @RestController
@@ -76,14 +78,15 @@ public class AccountController {
 		UserAccount user = this.userAccountRepository.findByUsernameOnly(auth.getName().toLowerCase());
 		
 		UserAccount _user = this.userAccountRepository.findByUsername(userAccount.getUsername().toLowerCase(), user.getId());
-		
+		JSONResponse jsonResponse = JSONResponse.fromGeneralTemplate(
+			AppHelper.PREFIX_ACC + "/profile", "Tus datos se han actualizado.", 200);
+
 		if(_user != null)
 			throw new ConflictException("El usuario '"+userAccount.getUsername()+"' ya esta en uso.");
 		
-		String message = "{\"message\": \"Tus datos se han actualizado.\"}";
-		
-		if(!userAccount.getUsername().equals(user.getUsername()))
-			message = "{\"message\": \"Tus datos se han actualizado, por favor vuelve a loguearte.\"}";
+		if(!userAccount.getUsername().equals(user.getUsername())) {
+			jsonResponse.addPropertie(
+				"message", "Tus datos se han actualizado, por favor vuelve a loguearte."); }
 		
 		userAccount.setId(user.getId());
 		userAccount.setEmail(user.getEmail());
@@ -96,7 +99,7 @@ public class AccountController {
 		this.userAccountRepository.save(userAccount);
 		
 		return ResponseEntity
-				.ok(message);
+			.ok(jsonResponse.getBody());
 	}
 	
 	@DeleteMapping("/account")
@@ -126,32 +129,61 @@ public class AccountController {
 
 	}
 
-	// Get only for fast test, change to PostMapping
-	@GetMapping(value="/verify-account")
-	public String verifyAccount( @RequestParam("token") String token ) {
+	// Change to post
+	@GetMapping(value="/verify-account", produces = AppHelper.JSON)
+	public ResponseEntity<?> verifyAccount( @RequestParam("token") String token ) {
+
+		String path = AppHelper.PREFIX_ACC + "/verify-account";
 
 		if( accountService.validateToken(token) ) { 
-			return "Success account verification"; }
+			
+			return  ResponseEntity.ok( JSONResponse.fromGeneralTemplate(
+				path, 
+				"Success account verification", 
+				200).getBody() );
 		
-		return "Verification token has expired";
+		} else {
+			
+			return ResponseEntity.status(410).body( new ErrorResponse( 
+				"Verification token has expired", 
+				new AccountServiceException() , 
+				path, 
+				410 ) );
+		
+		}
 
 	}
 
-	// Get only for fast test, change to PostMapping
-	@GetMapping(value="/verify-unsubscribe")
-	public String verifyUnsubscribe( @RequestParam("token") String token ) {
+	// Change to post
+	@GetMapping(value="/verify-unsubscribe", produces = AppHelper.JSON)
+	public ResponseEntity<?> verifyUnsubscribe( @RequestParam("token") String token ) {
+
+		String path = AppHelper.PREFIX_ACC + "/verify-unsubscribe";
 
 		if( accountService.validateToken(token) ) { 
-			return "The account has been successfully deleted"; }
+			
+			return  ResponseEntity.ok( JSONResponse.fromGeneralTemplate(
+				path, 
+				"The account has been successfully deleted", 
+				200).getBody() );
 		
-		return "Verification token has expired";
+		} else {
+
+			return ResponseEntity.status(410).body( new ErrorResponse(
+				"Verification token has expired", 
+				new AccountServiceException(),
+				path,
+				410) );
+		
+		}
 
 	}
 	
-	@PostMapping(value="/resend-verification")
-	public String resendVerifyAccount( @RequestBody UserAccount userAccount ) {
+	@PostMapping(value="/resend-verification", produces = AppHelper.JSON)
+	public ResponseEntity<?> resendVerifyAccount( @RequestBody UserAccount userAccount ) {
 
 		userAccount = userAccountRepository.findByEmail(userAccount.getEmail());
+		String path = AppHelper.PREFIX_ACC + "/resend-verification";
 		
 		if(userAccount == null) { 
 			throw new AccountServiceException(
@@ -160,18 +192,22 @@ public class AccountController {
 		accountService.resendEmailValidationToken(
 			userAccount, EnumToken.REGISTRATION);
 
-		return "Verification token is resend";
+		return  ResponseEntity.ok( JSONResponse.fromGeneralTemplate(
+			path, 
+			"Verification token is resend", 
+			200).getBody() );
 
 	}
 
-	@PostMapping(value="/resend-unsubscribe")
-	public String resendUnsubscribeAccount() {
+	@PostMapping(value="/resend-unsubscribe", produces = AppHelper.JSON)
+	public ResponseEntity<?> resendUnsubscribeAccount() {
 
 		UserAccount userAccount;
 		Authentication authUser;
 
 		authUser = SecurityContextHolder.getContext().getAuthentication();
 		userAccount = userAccountRepository.findByUsername(authUser.getName());
+		String path = AppHelper.PREFIX_ACC + "/resend-unsubscribe";
 	
 		if(userAccount == null) { 
 			throw new AccountServiceException(
@@ -186,8 +222,11 @@ public class AccountController {
 
 		accountService
 			.resendEmailValidationToken(userAccount, EnumToken.UNSUBSCRIBE);
-
-		return "Unsubscribe token is resend";
+		
+		return  ResponseEntity.ok( JSONResponse.fromGeneralTemplate(
+			path, 
+			"Unsubscribe token is resend", 
+			200).getBody() );
 
 	}
 

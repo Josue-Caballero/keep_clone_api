@@ -28,6 +28,8 @@ import ec.com.jnegocios.repository.ImageRepository;
 import ec.com.jnegocios.service.note.NoteService;
 import ec.com.jnegocios.service.upload.UploadFileControllerService;
 import ec.com.jnegocios.util.AppHelper;
+import ec.com.jnegocios.util.JSONResponse;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -157,8 +159,10 @@ public class NoteController {
 			this.serviceNote.softDelete(id);
 		}
 				
-		return ResponseEntity
-			.ok("{\"message\":\"Nota borrada.\"}");
+		return ResponseEntity.ok( JSONResponse.fromGeneralTemplate(
+			AppHelper.PREFIX_NOTE.concat("/" + String.valueOf(id)), 
+			"Nota borrada.", 
+			200).getBody() );
 	}
 	
 	/**
@@ -169,12 +173,14 @@ public class NoteController {
 	public ResponseEntity<?> destroyImage (@PathVariable Integer id)
 	{	
 		Image image = repoImage.findById(id)
-				.orElseThrow(() -> new NotFoundException("La imagen con id '"+id+ "' no existe."));
+			.orElseThrow(() -> new NotFoundException("La imagen con id '"+id+ "' no existe."));
 		
 		if(this.uploadService.deleteFile(image.getNameImage()))
 			this.repoImage.deleteById(image.getId());
 		
-		return ResponseEntity
-			.ok("{\"message\":\"Imagen borrada.\"}");
+		return ResponseEntity.ok( JSONResponse.fromGeneralTemplate(
+			AppHelper.PREFIX_NOTE.concat("/image/" + String.valueOf(id)), 
+			"Imagen borrada.", 
+			200).getBody() );
 	}
 }

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ec.com.jnegocios.entity.Tag;
 import ec.com.jnegocios.service.tag.TagService;
 import ec.com.jnegocios.util.AppHelper;
+import ec.com.jnegocios.util.JSONResponse;
 
 @RestController
 @RequestMapping(AppHelper.PREFIX_TAG)
@@ -35,7 +36,7 @@ public class TagController {
 	public ResponseEntity<Collection<Tag>> findTagsByUserAuth (Principal auth) {
 		Collection<Tag> tags = serviceTag.findByUsername(auth.getName());
 		return ResponseEntity
-				.ok(tags);
+			.ok(tags);
 	}
 	
 	/** 
@@ -45,8 +46,8 @@ public class TagController {
 	@GetMapping(value="/{id}", produces = AppHelper.JSON)
 	public ResponseEntity<Tag> show (@PathVariable Integer id) {
 		return ResponseEntity
-				.status(HttpStatus.FOUND)
-				.body(serviceTag.findById(id));
+			.status(HttpStatus.FOUND)
+			.body(serviceTag.findById(id));
 	}
 	
 	/** 
@@ -58,8 +59,8 @@ public class TagController {
 	{
 		Tag _tag = this.serviceTag.save(tag, auth.getName());
 		return ResponseEntity
-				.status(HttpStatus.CREATED)
-				.body(_tag);
+			.status(HttpStatus.CREATED)
+			.body(_tag);
 	}
 	
 	/** 
@@ -71,7 +72,7 @@ public class TagController {
 	{
 		Tag _tag = this.serviceTag.update(tag, id);
 		return ResponseEntity
-				.ok(_tag);
+			.ok(_tag);
 	}
 	
 	/** 
@@ -82,7 +83,9 @@ public class TagController {
 	public ResponseEntity<?> destroy (@PathVariable int id)
 	{
 		this.serviceTag.delete(id);
-		return ResponseEntity
-				.ok("{\"message\":\"Tag eliminado.\"}");
+		return ResponseEntity.ok( JSONResponse.fromGeneralTemplate(
+			AppHelper.PREFIX_TAG.concat("/" + String.valueOf(id)), 
+			"Tag eliminado.", 
+			200).getBody() );
 	}
 }

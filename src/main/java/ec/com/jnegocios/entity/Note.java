@@ -62,7 +62,7 @@ public class Note implements Serializable {
 	
 	@ManyToMany
 	@JoinTable(name = "note_tags", joinColumns = @JoinColumn(name = "note_id", referencedColumnName = "id"), 
-							inverseJoinColumns = @JoinColumn(name="tag_id", referencedColumnName = "id"))
+		inverseJoinColumns = @JoinColumn(name="tag_id", referencedColumnName = "id"))
 	@JsonIgnoreProperties({"user", "notes"})
 	@OrderBy("name asc")
 	private Collection<Tag> tags;

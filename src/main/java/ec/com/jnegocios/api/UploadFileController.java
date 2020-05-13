@@ -20,6 +20,7 @@ import ec.com.jnegocios.exception.global.file.FileNotSupportException;
 import ec.com.jnegocios.service.upload.FileDetails;
 import ec.com.jnegocios.service.upload.UploadFileControllerService;
 import ec.com.jnegocios.util.AppHelper;
+import ec.com.jnegocios.util.JSONResponse;
 
 @RestController
 @RequestMapping(AppHelper.PREFIX_UPLOAD)
@@ -29,7 +30,7 @@ public class UploadFileController {
 	private UploadFileControllerService uploadService;
 
 	@PostMapping("/image-account")
-	public ResponseEntity uploadImageAccount(@RequestParam MultipartFile img ) {
+	public ResponseEntity<?> uploadImageAccount(@RequestParam MultipartFile img ) {
 
 		Authentication authUser = SecurityContextHolder.getContext()
 			.getAuthentication();
@@ -51,7 +52,7 @@ public class UploadFileController {
 	}
 	
 	@PostMapping("/image-note")
-	public ResponseEntity uploadImageNote (
+	public ResponseEntity<?> uploadImageNote (
 		@RequestParam Integer noteId, @RequestParam MultipartFile[] img) {
 
 		if( img.length < 0 ) {
@@ -75,11 +76,17 @@ public class UploadFileController {
 	}
 
 	@DeleteMapping("/delete-file")
-	public String deleteImage(@RequestParam String uniqueId) {
+	public ResponseEntity<?> deleteImage(@RequestParam String uniqueId) {
 
 		uploadService.deleteFile(uniqueId);
 
-		return "The file " + uniqueId + " is successfuly deleted";
+		return ResponseEntity.ok()
+			.contentType(MediaType.APPLICATION_JSON)
+			.body( JSONResponse.fromGeneralTemplate(
+				AppHelper.PREFIX_UPLOAD + "/delete-file", 
+				"The file " + uniqueId + " is successfuly deleted", 
+				200).getBody() 
+			);
 
 	}
 
