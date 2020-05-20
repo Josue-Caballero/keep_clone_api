@@ -132,7 +132,7 @@ public class AccountController {
 	}
 
 	// Change to post
-	@GetMapping(value="/verify-account", produces = AppHelper.JSON)
+	@PostMapping(value="/verify-account", produces = AppHelper.JSON)
 	public ResponseEntity<?> verifyAccount( @RequestParam("token") String token ) {
 
 		String path = AppHelper.PREFIX_ACC + "/verify-account";
