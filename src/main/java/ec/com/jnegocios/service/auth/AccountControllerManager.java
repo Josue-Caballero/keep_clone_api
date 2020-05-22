@@ -18,7 +18,6 @@ import ec.com.jnegocios.entity.UserAccount;
 import ec.com.jnegocios.exception.ConflictException;
 import ec.com.jnegocios.exception.global.auth.AccountServiceException;
 import ec.com.jnegocios.repository.AccountTokenRepository;
-import ec.com.jnegocios.repository.ImageRepository;
 import ec.com.jnegocios.repository.RoleRepository;
 import ec.com.jnegocios.repository.UserRepository;
 import ec.com.jnegocios.service.mail.MailSenderService;
@@ -54,10 +53,7 @@ public class AccountControllerManager implements AccountControllerService {
 		
 	@Autowired
 	private UploadFileControllerService uploadService;
-	
-	@Autowired
-	private ImageRepository repoImage;
-	
+		
 	public AccountControllerManager validateAccountData(
 		UserAccount userAccount) throws AccountServiceException {
 		

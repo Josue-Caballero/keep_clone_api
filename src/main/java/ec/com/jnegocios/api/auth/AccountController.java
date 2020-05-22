@@ -68,7 +68,7 @@ public class AccountController {
 		UserAccount user = this.userAccountRepository.findByUsernameOnly(auth.getName().toLowerCase());
 		
 		return ResponseEntity
-			.status(HttpStatus.FOUND)
+			.status(HttpStatus.OK)
 			.body(user);
 	}
 	

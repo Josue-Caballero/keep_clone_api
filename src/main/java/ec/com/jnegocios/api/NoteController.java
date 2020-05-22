@@ -114,7 +114,7 @@ public class NoteController {
 	public ResponseEntity<Note> getNoteByById (@PathVariable Integer id)
 	{
 		return ResponseEntity
-			.status(HttpStatus.FOUND)
+			.status(HttpStatus.OK)
 			.body(this.serviceNote.findById(id));
 	}
 	

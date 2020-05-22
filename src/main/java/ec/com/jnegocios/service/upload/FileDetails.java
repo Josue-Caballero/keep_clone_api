@@ -1,8 +1,6 @@
 
 package ec.com.jnegocios.service.upload;
 
-import org.springframework.beans.factory.annotation.Value;
-
 import ec.com.jnegocios.util.IdentifierGenerator;
 import lombok.Data;
 import lombok.Getter;

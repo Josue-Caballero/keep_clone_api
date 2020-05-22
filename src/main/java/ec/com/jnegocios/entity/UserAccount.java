@@ -52,7 +52,7 @@ public class UserAccount implements Serializable {
 	
 	@Size(min = 3, max = 16, message = "El nombre de usuario debe ser mayor a 3 y menor a 16 caracteres.")
 	@NotEmpty(message = "El nombre de usuario es obligatorio.")
-	@Pattern(regexp = "[a-z0-9]+", message="El nombre de usuario debe contener letras o letras con números")
+	@Pattern(regexp = "^[a-z0-9]+$", message = "El nombre de usuario debe ser alfanumérico.")
 	private String username;
 	
 	@Email(message = "El correo no es válido.")

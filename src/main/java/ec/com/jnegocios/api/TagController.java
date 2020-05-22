@@ -46,7 +46,7 @@ public class TagController {
 	@GetMapping(value="/{id}", produces = AppHelper.JSON)
 	public ResponseEntity<Tag> show (@PathVariable Integer id) {
 		return ResponseEntity
-			.status(HttpStatus.FOUND)
+			.status(HttpStatus.OK)
 			.body(serviceTag.findById(id));
 	}
 	
